@@ -1,0 +1,32 @@
+<nav class="navbar navbar-expand bg-dark justify-content-between">
+  <!-- Links -->
+  <ul class="navbar-nav">
+    <li class="mr-2">
+      <a routerLink="/home" routerLinkActive="active">Home</a>
+    </li>
+    <li class="mr-2">
+      <a routerLink="/player" routerLinkActive="active" *ngIf="showPlayerBoard" >Player board</a>
+    </li>
+    <li class="mr-2">
+      <a routerLink="/company" routerLinkActive="active" *ngIf="showCompanyBoard" >Company board</a>
+    </li>
+    <li class="mr-2">
+      <a routerLink="/admin" routerLinkActive="active" *ngIf="showAdminBoard" >Admin board</a>
+    </li>
+    <li class="mr-2">
+      <a routerLink="/profile" routerLinkActive="active" *ngIf="isLoggedIn" >Profile</a>
+    </li>
+  </ul>
+  <ul class="navbar-nav">
+    <li>
+      <a routerLink="/signin" routerLinkActive="active" class="btn btn-primary mr-2" *ngIf="!isLoggedIn">Connexion</a>
+    </li>
+    <li>
+      <a routerLink="/signup" routerLinkActive="active" class="btn btn-primary" *ngIf="!isLoggedIn">S'inscrire</a>
+    </li>
+    <li>
+      <a class="btn btn-danger" (click)="logout()"  *ngIf="isLoggedIn">Déconnexion</a>
+    </li>
+  </ul>
+</nav>
+<router-outlet></router-outlet>

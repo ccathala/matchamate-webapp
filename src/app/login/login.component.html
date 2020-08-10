@@ -1,0 +1,49 @@
+<div class="d-flex align-items-center h-100 text-center">
+  <form
+    *ngIf="!isLoggedIn"
+    [formGroup]="loginForm"
+    (ngSubmit)="onSubmit()"
+    class="loginForm mx-auto"
+  >
+    <h1>Connexion</h1>
+    <div class="form-group">
+      <input
+        class="form-control"
+        type="text"
+        formControlName="email"
+        placeholder="Email"
+      />
+      <div
+        class="alert- alert-danger"
+        *ngIf="email.invalid && (email.dirty || email.touched)"
+      >
+        <div *ngIf="email.errors.required">Email is required</div>
+        <div *ngIf="email.errors.email">Email must be valid</div>
+      </div>
+      <input
+        class="form-control"
+        type="password"
+        formControlName="password"
+        placeholder="Password"
+      />
+      <div
+        class="alert- alert-danger"
+        *ngIf="password.invalid && (password.dirty || password.touched)"
+      >
+        <div *ngIf="password.errors.required">Password is required</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <button
+        class="btn btn-primary"
+        type="submit"
+        [disabled]="!loginForm.valid"
+      >
+        Connexion
+      </button>
+    </div>
+    <div class="alert alert-warning" *ngIf="isLoginFailed">
+      Signup failed!<br />{{ errorMessage }}
+    </div>
+  </form>
+</div>
