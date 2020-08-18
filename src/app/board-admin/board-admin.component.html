@@ -1,5 +1,87 @@
 <div class="container">
   <header class="jumbotron">
-    <p>{{ content }}</p>
+    <h1>Administration</h1>
   </header>
+
+  <form [formGroup]="registerCompanyForm" (ngSubmit)="onSubmit()">
+    <h2 class="mb-3">Ajouter une compagnie:</h2>
+    <div class="form-group mb-3">
+      <input
+        class="form-control mb-2"
+        type="text"
+        formControlName="email"
+        placeholder="Email"
+      />
+      <div
+        class="alert alert-danger"
+        *ngIf="email.invalid && (email.dirty || email.touched)"
+      >
+        <div *ngIf="email.errors.required">Email is required</div>
+        <div *ngIf="email.errors.email">Email must be valid</div>
+      </div>
+      <input
+        class="form-control mb-2"
+        type="password"
+        formControlName="password"
+        placeholder="Password"
+      />
+      <div
+        class="alert alert-danger"
+        *ngIf="password.invalid && (password.dirty || password.touched)"
+      >
+        <div *ngIf="password.errors.required">Password is required</div>
+        <div *ngIf="password.errors.minlength">
+          Password must be at least 6 characters
+        </div>
+      </div>
+      <input
+        class="form-control mb-2"
+        type="password"
+        formControlName="passwordConfirm"
+        placeholder="Confirm password"
+      />
+      <div
+        class="alert alert-danger"
+        *ngIf="
+          passwordConfirm.invalid &&
+          (passwordConfirm.dirty || passwordConfirm.touched)
+        "
+      >
+        <div *ngIf="passwordConfirm.errors.required">Password is required</div>
+        <div *ngIf="passwordConfirm.errors.minlength">
+          Password confirm must be at least 6 characters
+        </div>
+      </div>
+      <input
+        class="form-control mb-2"
+        type="text"
+        formControlName="name"
+        placeholder="Name"
+      />
+      <div
+        class="alert alert-danger"
+        *ngIf="name.invalid && (name.dirty || name.touched)"
+      >
+        <div *ngIf="name.errors.required">Password is required</div>
+        <div *ngIf="name.errors.minlength">
+          Password confirm must be at least 6 characters
+        </div>
+      </div>
+      <div class="form-group">
+        <button
+          class="btn btn-success"
+          type="submit"
+          [disabled]="!registerCompanyForm.valid"
+        >
+          Ajouter la compagnie
+        </button>
+      </div>
+      <div class="alert alert-warning" *ngIf="isSignUpFailed">
+        Signup failed!<br />{{ errorMessage }}
+      </div>
+      <div class="alert alert-success" *ngIf="isSuccessful">
+        Compagnie ajoutée avec succès<br />
+      </div>
+    </div>
+  </form>
 </div>

@@ -14,6 +14,7 @@ import { BoardPlayerComponent } from './board-player/board-player.component';
 import { BoardCompanyComponent } from './board-company/board-company.component';
 
 import { authInterceptorProviders } from './_helpers/auth.interceptor';
+import { DataCompanyFormComponent } from './_forms/data-company-form/data-company-form.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { authInterceptorProviders } from './_helpers/auth.interceptor';
     ProfileComponent,
     BoardAdminComponent,
     BoardPlayerComponent,
-    BoardCompanyComponent
+    BoardCompanyComponent,
+    DataCompanyFormComponent
   ],
   imports: [
     BrowserModule,

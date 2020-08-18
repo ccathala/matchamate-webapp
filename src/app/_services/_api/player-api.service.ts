@@ -1,9 +1,8 @@
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 
 const PLAYER_API = 'http://localhost:8084/matchamate-player-api/';
-// const PLAYER_API = 'http://localhost:8085/';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -14,7 +13,29 @@ const httpOptions = {
 })
 export class PlayerApiService {
 
+  player: any;
+  playerSubject = new Subject<any>();
+
   constructor(private http: HttpClient) { }
+
+  emitPlayerSubject(): void {
+    this.playerSubject.next(this.player);
+  }
+
+  getPlayerByEmail(email: string, onSuccess: () => void): void {
+    this.http.get(PLAYER_API
+      + 'players/search/findByEmail?email='
+      + email).subscribe(
+        data => {
+          this.player = data;
+          this.emitPlayerSubject();
+          onSuccess();
+        },
+        err => {
+          console.error(err);
+        }
+      );
+  }
 
   registerPlayer(player): Observable<any> {
     return this.http.post(PLAYER_API + 'players', {

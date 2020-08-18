@@ -1,5 +1,63 @@
-<div class="container">
-  <header class="jumbotron">
-    <p>{{ content }}</p>
-  </header>
+<div class="container mt-5">
+  <div class="bg-light p-4" *ngIf="!isCompanyDataModificationInProgress">
+    <h2>Informations:</h2>
+    <hr />
+    <p>Nom: {{ company.name }}</p>
+    <p>Email: {{ company.email }}</p>
+    <p>Téléphone: {{ company.phone }}</p>
+    <p>Site web: {{ company.web }}</p>
+    <p>
+      Adresse: {{ company.address.buildingNumber }}
+      {{ company.address.street }} {{ company.address.city }}
+      {{ company.address.zipCode }}
+    </p>
+    <p>Département: {{ company.address.departement }}</p>
+    <p>Région: {{ company.address.region }}</p>
+    <h2 class="mt-5">Horaires:</h2>
+    <hr />
+    <p>
+      Lundi: {{ company?.companyOpeningHours.monday.openingTime }} -
+      {{ company.companyOpeningHours.monday.closingTime }}
+    </p>
+    <p>
+      Mardi: {{ company.companyOpeningHours.tuesday.openingTime }} -
+      {{ company.companyOpeningHours.tuesday.closingTime }}
+    </p>
+    <p>
+      Mercredi: {{ company.companyOpeningHours.wednesday.openingTime }} -
+      {{ company.companyOpeningHours.wednesday.closingTime }}
+    </p>
+    <p>
+      Jeudi: {{ company.companyOpeningHours.thursday.openingTime }} -
+      {{ company.companyOpeningHours.thursday.closingTime }}
+    </p>
+    <p>
+      Vendredi: {{ company.companyOpeningHours.friday.openingTime }} -
+      {{ company.companyOpeningHours.friday.closingTime }}
+    </p>
+    <p>
+      Samedi: {{ company.companyOpeningHours.saturday.openingTime }} -
+      {{ company.companyOpeningHours.saturday.closingTime }}
+    </p>
+    <p>
+      Dimanche: {{ company.companyOpeningHours.sunday.openingTime }} -
+      {{ company.companyOpeningHours.sunday.closingTime }}
+    </p>
+    <div class="text-right">
+      <button class="btn btn-primary" (click)="enableCompanyDataModification()">
+        Modifier
+      </button>
+    </div>
+  </div>
+
+  <div class="bg-light p-4" *ngIf="isCompanyDataModificationInProgress">
+    <app-data-company-form
+      [isCompanyDataModificationInProgress]="
+        isCompanyDataModificationInProgress
+      "
+      (isCompanyDataModificationInProgressEvent)="
+        onDisableCompanyDataModificationInProgress($event)
+      "
+    ></app-data-company-form>
+  </div>
 </div>

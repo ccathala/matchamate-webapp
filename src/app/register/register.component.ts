@@ -1,9 +1,8 @@
 import { ErrorHandlerService } from './../_services/error-handler.service';
-import { PlayerApiService } from './../_services/player-api.service';
+import { PlayerApiService } from '../_services/_api/player-api.service';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../_services/auth.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-register',
@@ -36,14 +35,13 @@ export class RegisterComponent implements OnInit {
 
   onSubmit(): void {
     // Register player in player-api
-    console.log(this.registerForm.value);
     this.playerApi.registerPlayer(this.registerForm.value).subscribe(
       dataPlayerRegistration => {
         // Player registration is successful
         console.log(dataPlayerRegistration);
         this.isSuccessfullyRegisteredPlayer = true;
         // Register user in auth server
-        this.authService.register(this.registerForm.value).subscribe(
+        this.authService.register(this.registerForm.value, null).subscribe(
           dataAuthRegistration => {
             // User registration is successful
             console.log(dataAuthRegistration);

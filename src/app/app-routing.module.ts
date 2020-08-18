@@ -1,4 +1,6 @@
-import { PlayerGuardService } from './_services/player-guard.service';
+import { AdminGuardService } from './_services/_auth-guard/admin-guard.service';
+import { PlayerGuardService } from './_services/_auth-guard/player-guard.service';
+import { CompanyGuardService } from './_services/_auth-guard/company-guard.service';
 import { ProfileComponent } from './profile/profile.component';
 import { BoardAdminComponent } from './board-admin/board-admin.component';
 import { BoardCompanyComponent } from './board-company/board-company.component';
@@ -14,8 +16,8 @@ const routes: Routes = [
   { path: 'signin', component: LoginComponent},
   { path: 'signup', component: RegisterComponent},
   { path: 'player', canActivate: [PlayerGuardService], component: BoardPlayerComponent},
-  { path: 'company', component: BoardCompanyComponent},
-  { path: 'admin', component: BoardAdminComponent},
+  { path: 'company', canActivate: [CompanyGuardService], component: BoardCompanyComponent},
+  { path: 'admin', canActivate: [AdminGuardService], component: BoardAdminComponent},
   { path: 'profile', component: ProfileComponent},
   { path: '', redirectTo: '/home', pathMatch: 'full'}
 ];

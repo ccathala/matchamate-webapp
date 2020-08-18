@@ -1,6 +1,10 @@
+import { UtilsService } from './utils.service';
+import { PlayerApiService } from './_api/player-api.service';
+import { CompanyApiService } from './_api/company-api.service';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
 
 const AUTH_API = 'http://localhost:8084/auth/';
 
@@ -13,20 +17,25 @@ const httpOptions = {
 })
 export class AuthService {
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private companyApi: CompanyApiService,
+    private playerApi: PlayerApiService,
+    private utils: UtilsService) { }
 
   login(credentials): Observable<any> {
     return this.http.post(AUTH_API + 'signin', {
       email: credentials.email,
-      password: credentials.password
+      password: credentials.password,
     }, httpOptions);
   }
 
-  register(user): Observable<any> {
+  register(user, roles): Observable<any> {
     return this.http.post(AUTH_API + 'signup', {
       email: user.email,
       password: user.password,
-      passwordConfirm: user.passwordConfirm
+      passwordConfirm: user.passwordConfirm,
+      roles
     }, httpOptions);
   }
 }
