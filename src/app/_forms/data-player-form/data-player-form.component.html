@@ -1,0 +1,85 @@
+<form [formGroup]="playerModificationForm" (ngSubmit)="onSubmit()">
+  <div class="form-group">
+    <label for="firstName">Prénom:</label>
+      <input
+        id="firstName"
+        formControlName="firstName"
+        type="text"
+        class="form-control mb-2"
+        placeholder="Prénom"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="lastName">Nom:</label>
+      <input
+        id="lastName"
+        formControlName="lastName"
+        type="text"
+        class="form-control mb-2"
+        placeholder="Nom"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="gender">Genre:</label>
+      <select class="form-control mb-2" id="gender" formControlName="gender">
+        <option value="" disabled>Selectionnez votre genre</option>
+        <option value="Femme">Femme</option>
+        <option value="Homme">Homme</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="badmintonLevel">Niveau de pratique du badminton:</label>
+      <select class="form-control mb-2" id="gender" formControlName="badmintonLevel">
+        <option value="" disabled>Selectionnez votre niveau de pratique</option>
+        <option value="Débutant">Débutant</option>
+        <option value="Régulier">Intermédiaire</option>
+        <option value="Confirmé">Confirmé</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <input
+        formControlName="email"
+        type="text"
+        class="form-control sr-only"
+      />
+    </div>
+
+    <div class="form-group">
+      <input
+        formControlName="avatarPicture"
+        type="text"
+        class="form-control sr-only"
+      />
+    </div>
+
+    <div class="form-group">
+      <input
+        formControlName="subscribedSessionCount"
+        type="number"
+        class="form-control sr-only"
+      />
+    </div>
+
+    <div class="form-group">
+      <input
+        formControlName="leavedSessionCount"
+        type="number"
+        class="form-control sr-only"
+      />
+    </div>
+
+  <div class="text-right">
+    <button class="btn btn-success mr-2" type="submit" [disabled]="!playerModificationForm.valid">Enregistrer</button>
+    <button
+      class="btn btn-danger"
+      type="button"
+      (click)="disablePlayerModificationInProgress()"
+    >
+      Annuler
+    </button>
+  </div>
+</form>

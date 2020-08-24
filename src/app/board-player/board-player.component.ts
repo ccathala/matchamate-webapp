@@ -1,26 +1,50 @@
-import { Component, OnInit } from '@angular/core';
-import { UserService } from '../_services/user.service';
+import { PlayerApiService } from './../_services/_api/player-api.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-board-player',
   templateUrl: './board-player.component.html',
   styleUrls: ['./board-player.component.scss']
 })
-export class BoardPlayerComponent implements OnInit {
+export class BoardPlayerComponent implements OnInit, OnDestroy {
 
-  content: string;
+  playerEmail: string;
+  player: any;
+  playerSubscription: Subscription;
+  isPlayerModificationInProgress = false;
 
-  constructor(private userService: UserService) { }
+  constructor(private playerApi: PlayerApiService) { }
+
 
   ngOnInit(): void {
-    this.userService.getPlayerBoard().subscribe(
-      data => {
-        this.content = data;
+    this.playerSubscription = this.playerApi.playerSubject.subscribe(
+      playerData => {
+        this.player = playerData;
       },
       err => {
-        this.content = JSON.parse(err.error).message;
+        console.error(err);
       }
     );
+    this.playerApi.emitPlayerSubject();
+  }
+
+  ngOnDestroy(): void {
+    this.playerSubscription.unsubscribe();
+  }
+
+  enablePlayerModification(): void {
+    this.isPlayerModificationInProgress = true;
+  }
+
+  disablePlayerModification(): void {
+    this.isPlayerModificationInProgress = false;
+  }
+
+  onDisablePlayerModificationInProgress(event: boolean): void {
+    if (!event) {
+      this.disablePlayerModification();
+    }
   }
 
 }

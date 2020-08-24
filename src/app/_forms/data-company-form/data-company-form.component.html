@@ -12,16 +12,11 @@
     </div>
 
     <div class="form-group">
-      <input
-        formControlName="email"
-        type="text"
-        class="form-control sr-only"
-      />
+      <input formControlName="email" type="text" class="form-control sr-only" />
     </div>
 
     <div class="form-group">
       <input
-        id="avatarPicture"
         formControlName="avatarPicture"
         type="text"
         class="form-control sr-only"
@@ -105,26 +100,14 @@
           <option value="">Sélectionner le département</option>
           <option
             *ngFor="let departementItem of departementList"
-            value="{{ departementItem.nom }}"
+            [value]="departementItem.code"
             >{{ departementItem.code }}-{{ departementItem.nom }}</option
-          >
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="region">Région:</label>
-        <select id="region" class="form-control" formControlName="region">
-          <option value="">Sélectionner la région</option>
-          <option
-            *ngFor="let regionItem of regionList"
-            value="{{ regionItem.nom }}"
-            >{{ regionItem.nom }}</option
           >
         </select>
       </div>
     </div>
 
-    <div formGroupName="companyOpeningHours">
+    <div formGroupName="weekSchedule">
       <h2 class="my-4">Horaires:</h2>
       <div class="form-group form-row" formGroupName="monday">
         <div class="col-1 m-auto text-right">

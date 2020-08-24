@@ -17,13 +17,7 @@ export class BoardCompanyComponent implements OnInit, OnDestroy {
   companySubscription: Subscription;
   isCompanyDataModificationInProgress = false;
 
-  constructor(private userService: UserService,
-              private tokenStorage: TokenStorageService,
-              private companyApi: CompanyApiService,
-              private geoApi: GeoApiService) {
-    console.log('init board company');
-              }
-
+  constructor(private companyApi: CompanyApiService) {}
 
   ngOnInit(): void {
     this.companySubscription = this.companyApi.companySubject.subscribe(
@@ -34,16 +28,11 @@ export class BoardCompanyComponent implements OnInit, OnDestroy {
         console.error(err);
       }
     );
-
     this.companyApi.emitCompanySubject();
   }
 
   ngOnDestroy(): void {
     this.companySubscription.unsubscribe();
-  }
-
-  onSubmit(): void {
-
   }
 
   enableCompanyDataModification(): void {

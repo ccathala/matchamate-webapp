@@ -3,10 +3,9 @@ import { UtilsService } from './../../_services/utils.service';
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { Departement } from 'src/app/_models/departement';
 import { Region } from 'src/app/_models/region';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { CompanyApiService } from 'src/app/_services/_api/company-api.service';
 import { GeoApiService } from 'src/app/_services/_api/geo-api.service';
-import { TokenStorageService } from 'src/app/_services/token-storage.service';
 
 const hours = [
   '00:00',
@@ -42,18 +41,21 @@ const hours = [
 export class DataCompanyFormComponent implements OnInit, OnDestroy {
 
   companyId: string;
-  // @Input()
   company: any = {};
   companySubscription: Subscription;
   departementList: Departement[] = [];
+  departementListSubscription: Subscription;
+  selectedDepartement: Departement;
   regionList: Region[] = [];
+  regionListSubscription: Subscription;
+  selectedRegion: Region;
   @Input()
   hoursList: string[] = hours;
   @Input()
   isCompanyDataModificationInProgress: boolean;
   @Output()
   isCompanyDataModificationInProgressEvent = new EventEmitter<boolean>();
-
+  weekSchedule: any[] = [];
 
   companyDatamodificationForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
@@ -67,56 +69,61 @@ export class DataCompanyFormComponent implements OnInit, OnDestroy {
       city: new FormControl(''),
       zipCode: new FormControl(''),
       departement: new FormControl(''),
-      region: new FormControl('')
     }),
-    companyOpeningHours: new FormGroup({
+    weekSchedule: new FormGroup({
       monday: new FormGroup({
-        dayName: new FormControl(''),
+        dayName: new FormControl('monday'),
+        dayIndex: new FormControl(1),
         openingTime: new FormControl(''),
         closingTime: new FormControl('')
       }),
       tuesday: new FormGroup({
-        dayName: new FormControl(''),
+        dayName: new FormControl('tuesday'),
+        dayIndex: new FormControl(2),
         openingTime: new FormControl(''),
         closingTime: new FormControl('')
       }),
       wednesday: new FormGroup({
-        dayName: new FormControl(''),
+        dayName: new FormControl('wednesday'),
+        dayIndex: new FormControl(3),
         openingTime: new FormControl(''),
         closingTime: new FormControl('')
       }),
       thursday: new FormGroup({
-        dayName: new FormControl(''),
+        dayName: new FormControl('thursday'),
+        dayIndex: new FormControl(4),
         openingTime: new FormControl(''),
         closingTime: new FormControl('')
       }),
       friday: new FormGroup({
-        dayName: new FormControl(''),
+        dayName: new FormControl('friday'),
+        dayIndex: new FormControl(5),
         openingTime: new FormControl(''),
         closingTime: new FormControl('')
       }),
       saturday: new FormGroup({
-        dayName: new FormControl(''),
+        dayName: new FormControl('saturday'),
+        dayIndex: new FormControl(6),
         openingTime: new FormControl(''),
         closingTime: new FormControl('')
       }),
       sunday: new FormGroup({
-        dayName: new FormControl(''),
+        dayName: new FormControl('sunday'),
+        dayIndex: new FormControl(0),
         openingTime: new FormControl(''),
         closingTime: new FormControl('')
-      })
+      }),
     })
   });
 
   constructor(private companyApi: CompanyApiService,
-              private geoApi: GeoApiService,
-              private tokenStorage: TokenStorageService,
-              private utils: UtilsService) { }
+    private geoApi: GeoApiService,
+    private utils: UtilsService) { }
 
 
   ngOnInit(): void {
-    this.setGeoData();
     this.companyId = this.utils.getUserIdKey();
+
     this.companySubscription = this.companyApi.companySubject.subscribe(
       data => {
         this.company = data;
@@ -125,19 +132,64 @@ export class DataCompanyFormComponent implements OnInit, OnDestroy {
         console.error(err);
       }
     );
+
+    this.departementListSubscription = this.geoApi.departementListSubject.subscribe(
+      data => {
+        this.departementList = data;
+      },
+      err => {
+        console.error(err);
+      }
+    );
+
+    this.regionListSubscription = this.geoApi.regionListSubject.subscribe(
+      data => {
+        this.regionList = data;
+      },
+      err => {
+        console.error(err);
+      }
+    );
     this.companyApi.emitCompanySubject();
+    this.geoApi.emitDepartementListSubject();
+    this.geoApi.emitRegionListSubject();
     this.initDataModificationForm();
   }
 
   ngOnDestroy(): void {
     this.companySubscription.unsubscribe();
+    this.departementListSubscription.unsubscribe();
+    this.regionListSubscription.unsubscribe();
   }
 
   onSubmit(): void {
+    // Declare attributes
     console.log(this.companyDatamodificationForm.value);
-    this.companyApi.fullyUpdateCompany(this.companyDatamodificationForm.value, this.companyId).subscribe(
+    const companyData = this.companyDatamodificationForm.value;
+    const selectedDepartementCode = companyData.address.departement;
+    console.log(companyData);
+
+    // // Set weekSchedule array
+    this.weekSchedule.push(companyData.weekSchedule.monday);
+    this.weekSchedule.push(companyData.weekSchedule.tuesday);
+    this.weekSchedule.push(companyData.weekSchedule.wednesday);
+    this.weekSchedule.push(companyData.weekSchedule.thursday);
+    this.weekSchedule.push(companyData.weekSchedule.friday);
+    this.weekSchedule.push(companyData.weekSchedule.saturday);
+    this.weekSchedule.push(companyData.weekSchedule.sunday);
+
+    // Override companyData.weekSchedule with weekSchedule array
+    companyData.weekSchedule = this.weekSchedule;
+
+    // Override companyData.departement
+    companyData.address.departement = this.getDepartementByCode(selectedDepartementCode);
+
+    // Override companyData.region
+    companyData.address.region = this.getRegionByCode(companyData.address.departement.codeRegion);
+
+    // Update company on api
+    this.companyApi.fullyUpdateCompany(companyData, this.companyId).subscribe(
       data => {
-        console.log(data);
         this.companyApi.getCompanyByEmail(data.email, () => {
           this.disableCompanyDataModificationInProgress();
         });
@@ -146,12 +198,21 @@ export class DataCompanyFormComponent implements OnInit, OnDestroy {
         console.error(err);
       }
     );
+    this.weekSchedule = [];
+  }
+
+  getDepartementByCode(code: string): Departement {
+    return this.departementList.find(e => e.code === code);
+  }
+
+  getRegionByCode(code: string): Region {
+    return this.regionList.find(e => e.code === code);
   }
 
   initDataModificationForm(): void {
     this.initCompanyDataMainProperties();
     this.initCompanyDataAddressFormControl();
-    this.initCompanyDataOpeningHoursFormControl();
+    this.initCompanyWeekScheduleFormControl();
   }
 
   initCompanyDataMainProperties(): void {
@@ -217,144 +278,97 @@ export class DataCompanyFormComponent implements OnInit, OnDestroy {
       if (!!this.company.address.departement) {
         this.companyDatamodificationForm.patchValue({
           address: {
-            departement: this.company.address.departement
-          }
-        });
-      }
-
-      // Init region formControl-------------------------------
-      if (!!this.company.address.region) {
-        this.companyDatamodificationForm.patchValue({
-          address: {
-            region: this.company.address.region
+            departement: this.company.address.departement.code
           }
         });
       }
     }
   }
 
-  initCompanyDataOpeningHoursFormControl(): void {
-    if (!!this.company.companyOpeningHours) {
+  initCompanyWeekScheduleFormControl(): void {
+    if (!!this.company.weekSchedule) {
 
-      if (!!this.company.companyOpeningHours.monday) {
+      if (!!this.company.weekSchedule[0]) {
         this.companyDatamodificationForm.patchValue({
-          companyOpeningHours: {
+          weekSchedule: {
             monday: {
-              dayName: 'lundi',
-              openingTime: this.company.companyOpeningHours.monday.openingTime,
-              closingTime: this.company.companyOpeningHours.monday.closingTime
+              openingTime: this.company.weekSchedule[0].openingTime,
+              closingTime: this.company.weekSchedule[0].closingTime
             }
           }
         });
       }
 
-      if (!!this.company.companyOpeningHours.tuesday) {
+      if (!!this.company.weekSchedule[1]) {
         this.companyDatamodificationForm.patchValue({
-          companyOpeningHours: {
+          weekSchedule: {
             tuesday: {
-              dayName: 'mardi',
-              openingTime: this.company.companyOpeningHours.tuesday.openingTime,
-              closingTime: this.company.companyOpeningHours.tuesday.closingTime
+              openingTime: this.company.weekSchedule[1].openingTime,
+              closingTime: this.company.weekSchedule[1].closingTime
             }
           }
         });
       }
 
-      if (!!this.company.companyOpeningHours.wednesday) {
+      if (!!this.company.weekSchedule[2]) {
         this.companyDatamodificationForm.patchValue({
-          companyOpeningHours: {
+          weekSchedule: {
             wednesday: {
-              dayName: 'mercredi',
-              openingTime: this.company.companyOpeningHours.wednesday.openingTime,
-              closingTime: this.company.companyOpeningHours.wednesday.closingTime
+              openingTime: this.company.weekSchedule[2].openingTime,
+              closingTime: this.company.weekSchedule[2].closingTime
             }
           }
         });
       }
 
-      if (!!this.company.companyOpeningHours.thursday) {
+      if (!!this.company.weekSchedule[3]) {
         this.companyDatamodificationForm.patchValue({
-          companyOpeningHours: {
+          weekSchedule: {
             thursday: {
-              dayName: 'jeudi',
-              openingTime: this.company.companyOpeningHours.thursday.openingTime,
-              closingTime: this.company.companyOpeningHours.thursday.closingTime
+              openingTime: this.company.weekSchedule[3].openingTime,
+              closingTime: this.company.weekSchedule[3].closingTime
             }
           }
         });
       }
 
-      if (!!this.company.companyOpeningHours.friday) {
+      if (!!this.company.weekSchedule[4]) {
         this.companyDatamodificationForm.patchValue({
-          companyOpeningHours: {
+          weekSchedule: {
             friday: {
-              dayName: 'vendredi',
-              openingTime: this.company.companyOpeningHours.friday.openingTime,
-              closingTime: this.company.companyOpeningHours.friday.closingTime
+              openingTime: this.company.weekSchedule[4].openingTime,
+              closingTime: this.company.weekSchedule[4].closingTime
             }
           }
         });
       }
 
-      if (!!this.company.companyOpeningHours.saturday) {
+      if (!!this.company.weekSchedule[5]) {
         this.companyDatamodificationForm.patchValue({
-          companyOpeningHours: {
+          weekSchedule: {
             saturday: {
-              dayName: 'samedi',
-              openingTime: this.company.companyOpeningHours.saturday.openingTime,
-              closingTime: this.company.companyOpeningHours.saturday.closingTime
+              openingTime: this.company.weekSchedule[5].openingTime,
+              closingTime: this.company.weekSchedule[5].closingTime
             }
           }
         });
       }
 
-      if (!!this.company.companyOpeningHours.sunday) {
+      if (!!this.company.weekSchedule[6]) {
         this.companyDatamodificationForm.patchValue({
-          companyOpeningHours: {
+          weekSchedule: {
             sunday: {
-              dayName: 'dimanche',
-              openingTime: this.company.companyOpeningHours.sunday.openingTime,
-              closingTime: this.company.companyOpeningHours.sunday.closingTime
+              openingTime: this.company.weekSchedule[6].openingTime,
+              closingTime: this.company.weekSchedule[6].closingTime
             }
           }
         });
       }
     }
-  }
-  setDepartementList(): void {
-    this.geoApi.getDepartementList().subscribe(
-      (data: Departement[]) => {
-        this.departementList = data;
-
-      },
-      err => {
-        console.error(err);
-      }
-    );
-  }
-
-  setRegionList(): void {
-    this.geoApi.getRegionList().subscribe(
-      (data: Region[]) => {
-        this.regionList = data;
-      },
-      err => {
-        console.error(err);
-      }
-    );
-  }
-
-  setGeoData(): void {
-    this.setDepartementList();
-    this.setRegionList();
   }
 
   disableCompanyDataModificationInProgress(): void {
     this.isCompanyDataModificationInProgressEvent.emit(false);
-  }
-
-  get address(): any {
-    return this.companyDatamodificationForm.get('address');
   }
 
 }

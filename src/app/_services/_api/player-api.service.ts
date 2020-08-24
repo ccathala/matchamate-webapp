@@ -38,18 +38,20 @@ export class PlayerApiService {
   }
 
   registerPlayer(player): Observable<any> {
-    return this.http.post(PLAYER_API + 'players', {
-      email: player.email,
-      avatarPicture: '/pictures/default.png',
-      firstName: player.firstName,
-      lastName: player.lastName,
-      gender: player.gender,
-      badmintonLevel: player.badmintonLevel,
-      subscribedSessionCount: 0,
-      leavedSessionCount: 0
-    },
-    httpOptions
-    );
+      player.avatarPicture = '/pictures/default.png';
+      player.subscribedSessionCount =  0;
+      player.leavedSessionCount =  0;
+      return this.http.post(PLAYER_API + 'players',
+      player,
+      httpOptions
+      );
+  }
+
+  fullyUpdatePlayer(player: any, id: string): Observable<any> {
+    return this.http.put(PLAYER_API
+      + 'players/' + id,
+      player,
+      httpOptions);
   }
 
   deletePlayerByEmail(email): Observable<any>{

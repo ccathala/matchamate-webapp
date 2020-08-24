@@ -1,3 +1,4 @@
+import { CreateSessionComponent } from './create-session/create-session.component';
 import { AdminGuardService } from './_services/_auth-guard/admin-guard.service';
 import { PlayerGuardService } from './_services/_auth-guard/player-guard.service';
 import { CompanyGuardService } from './_services/_auth-guard/company-guard.service';
@@ -19,6 +20,7 @@ const routes: Routes = [
   { path: 'company', canActivate: [CompanyGuardService], component: BoardCompanyComponent},
   { path: 'admin', canActivate: [AdminGuardService], component: BoardAdminComponent},
   { path: 'profile', component: ProfileComponent},
+  { path: 'create-session', canActivate: [PlayerGuardService], component: CreateSessionComponent},
   { path: '', redirectTo: '/home', pathMatch: 'full'}
 ];
 

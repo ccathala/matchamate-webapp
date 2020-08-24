@@ -13,8 +13,10 @@ const httpOptions = {
 })
 export class CompanyApiService {
 
-  company: any = {};
+  company: any;
   companySubject = new Subject<any>();
+  companyList: any[];
+  companyListSubject = new Subject<any>();
 
   constructor(private http: HttpClient) {
     console.log('init company api');
@@ -22,6 +24,10 @@ export class CompanyApiService {
 
   emitCompanySubject(): void {
     this.companySubject.next(this.company);
+  }
+
+  emitCompanyListSubject(): void {
+    this.companyListSubject.next(this.companyList);
   }
 
   registerCompany(company): Observable<any> {
@@ -44,6 +50,19 @@ export class CompanyApiService {
           console.error(err);
         }
       );
+  }
+
+  getCompanies(onSuccess: () => void): void {
+    this.http.get(COMPANY_API + 'companies').subscribe(
+      (data: any) => {
+        this.companyList = data._embedded.companies;
+        this.emitCompanyListSubject();
+        onSuccess();
+      },
+      err => {
+        console.error(err);
+      }
+    );
   }
 
   fullyUpdateCompany(company: any, id: string): Observable<any> {

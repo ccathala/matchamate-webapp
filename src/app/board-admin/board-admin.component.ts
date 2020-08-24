@@ -48,8 +48,9 @@ export class BoardAdminComponent implements OnInit {
       street: '',
       city: '',
       zipCode: '',
-      departement: '',
-      region: ''
+      departement: {},
+      region: {},
+      weekSchedule: []
     };
 
     form.companyOpeningHours = {
