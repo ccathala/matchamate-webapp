@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { TabsModule } from 'ngx-bootstrap/tabs';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -21,6 +22,11 @@ import { DataPlayerFormComponent } from './_forms/data-player-form/data-player-f
 import { CreateSessionComponent } from './create-session/create-session.component';
 import { CreateSessionFormComponent } from './_forms/create-session-form/create-session-form.component';
 import { DatePipe } from '@angular/common';
+import { BookedSessionsComponent } from './player/booked-sessions/booked-sessions.component';
+import { PlayedSessionsComponent } from './player/played-sessions/played-sessions.component';
+import { PlayerDataComponent } from './player/player-data/player-data.component';
+import { SessionComponent } from './views/session/session.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -35,7 +41,11 @@ import { DatePipe } from '@angular/common';
     DataCompanyFormComponent,
     DataPlayerFormComponent,
     CreateSessionComponent,
-    CreateSessionFormComponent
+    CreateSessionFormComponent,
+    BookedSessionsComponent,
+    PlayedSessionsComponent,
+    PlayerDataComponent,
+    SessionComponent
   ],
   imports: [
     BrowserModule,
@@ -43,7 +53,9 @@ import { DatePipe } from '@angular/common';
     HttpClientModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    BsDatepickerModule.forRoot()
+    BsDatepickerModule.forRoot(),
+    TabsModule.forRoot(),
+    FontAwesomeModule
   ],
   providers: [authInterceptorProviders, DatePipe],
   bootstrap: [AppComponent]

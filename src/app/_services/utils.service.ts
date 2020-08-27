@@ -115,6 +115,17 @@ export class UtilsService {
   }
 
   /**
+   * Format number to two digits string
+   */
+  formatNumberToStringWithTwoDigits(numberValue: number): string {
+    if (numberValue < 10) {
+      return '0' + numberValue;
+    } else {
+      return numberValue.toString();
+    }
+  }
+
+  /**
    * Format date to utc string and add timezone offset
    */
   formatDateToUtcString(date: Date): string {

@@ -29,9 +29,9 @@ export class AppComponent implements OnInit, OnDestroy {
   companyListSubscription: Subscription;
 
   constructor(private tokenStorageService: TokenStorageService,
-    private utils: UtilsService,
-    private companyApi: CompanyApiService,
-    private geoApi: GeoApiService) { }
+              private utils: UtilsService,
+              private companyApi: CompanyApiService,
+              private geoApi: GeoApiService) { }
 
 
   ngOnInit(): void {

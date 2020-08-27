@@ -19,7 +19,6 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 })
 export class CreateSessionFormComponent implements OnInit, OnDestroy {
 
-  bsValue = new Date();
   minDate = new Date();
   companyList: any[];
   companyListSubscription: Subscription;
@@ -27,8 +26,8 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
   playerSubscription: Subscription;
   disabledDates = [new Date('2020-08-20')];
   selectedCompany: any;
-  selectedDate: Date;
-  generatedDaySchedule: Slot[] = [{ hour: '01:00', isFree: true }];
+  selectedDate: Date = new Date();
+  generatedDaySchedule: Slot[] = [];
   departementList: Departement[];
   departementListSubscription: Subscription;
   selectedDepartement = '';
@@ -38,21 +37,22 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
   queriedDepartementList: Departement[];
   queriedCompanyList: any[];
   sessionCreationSuccess: boolean;
+  bookedSlots: string[] = [];
 
   createSessionForm = new FormGroup({
     company: new FormControl('', [Validators.required]),
-    date: new FormControl('', [Validators.required]),
+    date: new FormControl(new Date(), [Validators.required]),
     beginTime: new FormControl('', [Validators.required]),
     maxPlayersNumber: new FormControl('', [Validators.required]),
     badmintonRequiredLevel: new FormControl('', [Validators.required])
   });
 
   constructor(private companyApi: CompanyApiService,
-              private utils: UtilsService,
-              private geoApi: GeoApiService,
-              private playerApi: PlayerApiService,
-              private sessionApi: SessionApiService,
-              private datePipe: DatePipe) { }
+    private utils: UtilsService,
+    private geoApi: GeoApiService,
+    private playerApi: PlayerApiService,
+    private sessionApi: SessionApiService,
+    private datePipe: DatePipe) { }
 
   ngOnInit(): void {
 
@@ -60,6 +60,7 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
     this.companyListSubscription = this.companyApi.companyListSubject.subscribe(
       data => {
         this.companyList = data;
+        this.queriedCompanyList = data;
       },
       err => {
         console.error(err);
@@ -102,15 +103,12 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
     this.geoApi.emitRegionListSubject();
     this.playerApi.emitPlayerSubject();
 
-    // initialize create session form
-    this.initCreateSessionForm();
-
-    // initialize queried CompanyList
-    this.queriedCompanyList = this.companyList;
-
+    // Disable beginTime formcontrol
+    this.createSessionForm.controls.beginTime.disable();
   }
 
   ngOnDestroy(): void {
+    // Unsubscribe
     this.companyListSubscription.unsubscribe();
     this.departementListSubscription.unsubscribe();
     this.regionListSubscription.unsubscribe();
@@ -118,33 +116,49 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    const session  = this.createSessionForm.value;
-    const beginTimeNumber = this.utils.formatHoursToNumber(session.beginTime);
-    const date: string = this.datePipe.transform(this.createSessionForm.value.date, 'yyyy-MM-dd');
-    session.date = date;
-    session.endTime = this.utils.formatNumberToHour(beginTimeNumber + 1);
-    session.participants = [this.player];
+    // Get form value
+    const session = this.createSessionForm.value;
 
+    // Get beginTime hour value
+    const beginTimeNumber = this.utils.formatHoursToNumber(session.beginTime);
+
+    // Get date with format yyyy-MM-dd
+    const date: string = this.datePipe.transform(this.createSessionForm.value.date, 'yyyy-MM-dd');
+
+    // Overrride session date value
+    session.date = date;
+
+    // Set session endTime
+    session.endTime = this.utils.formatNumberToHour(beginTimeNumber + 1);
+
+    // Set session participants
+    const player = this.player;
+    const maxPlayersNumber = this.createSessionForm.value.maxPlayersNumber;
+    player.isReady = false;
+    session.participants = [];
+    for (let index = 0; index < maxPlayersNumber; index++) {
+      if (index == 0) {
+        session.participants.push(player);
+      } else {
+        session.participants.push({});
+      }
+    }
+
+    // Set session default parameters
     session.readyParticipantsCount = 0;
     sessionStorage.isReserved = false;
     session.isLocked = false;
+    session.isDone = false;
+    session.isPlayed = false;
+
+    // Create session by POST http request to session API
     this.sessionApi.createSession(session, () => {
       this.sessionCreationSuccess = true;
     },
-    () => {
-     this.sessionCreationSuccess = false;
-    });
+      () => {
+        this.sessionCreationSuccess = false;
+      });
 
-  }
-
-
-  /**
-   * Init formcontrol from create session form
-   */
-  initCreateSessionForm(): void {
-    this.createSessionForm.patchValue({
-      date: this.bsValue
-    });
   }
 
   /**
@@ -152,6 +166,7 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
    */
   setSelectedCompany(company): void {
     this.selectedCompany = company;
+    this.createSessionForm.controls.beginTime.enable();
     this.setDaySchedule(this.selectedCompany, this.selectedDate);
   }
 
@@ -169,6 +184,42 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
   setDaySchedule(company: any, date: Date): void {
     if (company && date) {
       this.generatedDaySchedule = this.utils.generateCompanyDaySchedule(company.weekSchedule, date.getDay());
+      const year: string = date.getFullYear().toString();
+      const month: string = this.utils.formatNumberToStringWithTwoDigits(date.getMonth() + 1);
+      const day: string = this.utils.formatNumberToStringWithTwoDigits(date.getDate());
+      this.setBookedSlotsByCompanyEmailAndDate(company.email, year + '-' + month + '-' + day);
+    }
+  }
+
+  /**
+   * set session list by company email and date
+   */
+  setBookedSlotsByCompanyEmailAndDate(companyEmail: string, date: string): void {
+    let sessions: any[];
+    this.bookedSlots = [];
+    this.sessionApi.getSessionsByCompanyEmailAndDate(companyEmail, date).subscribe(
+      data => {
+        sessions = data._embedded.sessions;
+        for (const session of sessions) {
+          this.bookedSlots.push(session.beginTime);
+        }
+        this.addBookedSlotsToGeneratedDaySchedule();
+        console.log(this.generatedDaySchedule);
+      },
+      err => {
+        console.error(err);
+      }
+    );
+  }
+
+  /**
+   * Add booked slot to day schedule
+   */
+  addBookedSlotsToGeneratedDaySchedule(): void {
+    for (const hourSlot of this.generatedDaySchedule) {
+      if (this.bookedSlots.includes(hourSlot.hour)) {
+        hourSlot.isFree = false;
+      }
     }
   }
 
@@ -214,6 +265,7 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
    */
   onChangeDepartementSelect(codeDepartement: string): void {
     this.setSelectedDepartement(codeDepartement);
+    this.onChangeRegionOrDepartementSelect();
     this.setQueryCompanyList(this.selectedRegion, this.selectedDepartement);
   }
 
@@ -228,7 +280,17 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
     this.setSelectedRegion(codeRegion);
     this.setSelectedDepartement('');
     this.setQueryDepartementList(codeRegion);
+    this.onChangeRegionOrDepartementSelect();
     this.setQueryCompanyList(this.selectedRegion, this.selectedDepartement);
+  }
+
+  /**
+   * Do changes on create session form on region and departement changes
+   */
+  onChangeRegionOrDepartementSelect(): void {
+    this.createSessionForm.controls.company.setValue('');
+    this.createSessionForm.controls.beginTime.setValue('');
+    this.createSessionForm.controls.beginTime.disable();
   }
 
 }

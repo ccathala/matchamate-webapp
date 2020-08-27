@@ -1,50 +1,31 @@
-import { PlayerApiService } from './../_services/_api/player-api.service';
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { TokenStorageService } from './../_services/token-storage.service';
+import { SessionApiService } from './../_services/_api/session-api.service';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-board-player',
   templateUrl: './board-player.component.html',
   styleUrls: ['./board-player.component.scss']
 })
-export class BoardPlayerComponent implements OnInit, OnDestroy {
+export class BoardPlayerComponent implements OnInit {
 
-  playerEmail: string;
-  player: any;
-  playerSubscription: Subscription;
-  isPlayerModificationInProgress = false;
+  sessions: any[];
 
-  constructor(private playerApi: PlayerApiService) { }
+  constructor(private sessionApi: SessionApiService,
+              private tokenStorage: TokenStorageService) { }
 
 
   ngOnInit(): void {
-    this.playerSubscription = this.playerApi.playerSubject.subscribe(
-      playerData => {
-        this.player = playerData;
+    const email = this.tokenStorage.getUser().email;
+    this.sessionApi.getSessionsByPlayerEmail(email).subscribe(
+      data => {
+        this.sessions = data._embedded.sessions;
+        console.log('session initialized');
       },
       err => {
         console.error(err);
       }
     );
-    this.playerApi.emitPlayerSubject();
-  }
 
-  ngOnDestroy(): void {
-    this.playerSubscription.unsubscribe();
   }
-
-  enablePlayerModification(): void {
-    this.isPlayerModificationInProgress = true;
-  }
-
-  disablePlayerModification(): void {
-    this.isPlayerModificationInProgress = false;
-  }
-
-  onDisablePlayerModificationInProgress(event: boolean): void {
-    if (!event) {
-      this.disablePlayerModification();
-    }
-  }
-
 }

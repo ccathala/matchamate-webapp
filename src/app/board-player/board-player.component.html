@@ -1,27 +1,13 @@
 <div class="container mt-5">
-  <div class="bg-light p-4" *ngIf="!isPlayerModificationInProgress">
-    <h2>Informations:</h2>
-    <hr />
-    <p>Prénom: {{ player.firstName }}</p>
-    <p>Nom: {{ player.lastName }}</p>
-    <p>Genre: {{ player.gender }}</p>
-    <p>Niveau de pratique du badminton: {{ player.badmintonLevel }}</p>
-
-    <div class="text-right">
-      <button class="btn btn-primary" (click)="enablePlayerModification()">
-        Modifier
-      </button>
-    </div>
-  </div>
-
-  <div class="bg-light p-4" *ngIf="isPlayerModificationInProgress">
-    <app-data-player-form
-      [isPlayerModificationInProgress]="
-        isPlayerModificationInProgress
-      "
-      (isPlayerModificationInProgressEvent)="
-        onDisablePlayerModificationInProgress($event)
-      "
-    ></app-data-player-form>
-  </div>
+  <tabset>
+    <tab heading="Mes sessions de jeu à venir">
+      <app-booked-sessions [sessions]="sessions"></app-booked-sessions>
+    </tab>
+    <tab heading="Mes sessions de jeu passées">
+      <app-played-sessions [sessions]="sessions"></app-played-sessions>
+    </tab>
+    <tab heading="Mes informations personnelles">
+      <app-player-data></app-player-data>
+    </tab>
+  </tabset>
 </div>

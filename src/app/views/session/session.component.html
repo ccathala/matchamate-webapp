@@ -1,0 +1,43 @@
+<div class="mt-3">
+  <div class="row mx-2 bg-light border rounded-lg">
+    <div class="col-4 p-4 border-right">
+      <h4 class="mb-3">
+        Joueurs: {{ bookedPlayers.length }}/{{ session.participants.length }}
+      </h4>
+      <div *ngFor="let participant of session.participants">
+        <div class="row" *ngIf="participant.email">
+          <div class="col">
+            <p >
+              {{ participant.firstName }} {{ participant.lastName }}
+            </p>
+          </div>
+          <div class="col-2" *ngIf="quitEnabled && participant.email === userEmail" >
+            <button class="btn" type="button" (click)="quitSession(session, userEmail)"><fa-icon [icon]="faTimesCircle" size="lg" class="text-danger"></fa-icon></button>
+          </div>
+        </div>
+
+      </div>
+      <p *ngIf="bookedPlayers.length < session.participants.length && bookingEnabled">
+        <fa-icon [icon]="faPlus"></fa-icon> S'inscrire à la session
+      </p>
+    </div>
+    <div class="col-8 p-4">
+      <div class="row pl-3">
+        <h4 class="mb-3">Session:</h4>
+      </div>
+      <div class="row pl-3">
+        <p class="mr-3">Date: {{ session.date }}</p>
+        <p class="mr-3">Heure de début: {{ session.beginTime }}</p>
+        <p>Heure de fin: {{ session.endTime }}</p>
+      </div>
+      <p>Niveau de pratique requis: {{ session.badmintonRequiredLevel }}</p>
+      <p>Lieu: {{ session.company.name }}</p>
+      <p>
+        Adresse: {{ session.company.address.buildingNumber }}
+        {{ session.company.address.street }} {{ session.company.address.city }}
+        {{ session.company.address.zipcode }}
+      </p>
+    </div>
+  </div>
+  <hr />
+</div>

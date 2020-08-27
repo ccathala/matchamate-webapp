@@ -7,6 +7,9 @@ const SESSION_API = 'http://localhost:8084/matchamate-session-api/';
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
+const httpPatchOptions = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json-patch+json' })
+};
 
 @Injectable({
   providedIn: 'root'
@@ -28,19 +31,35 @@ export class SessionApiService {
     );
   }
 
-  // getSessionByCompanyAndDate(company, date: Date, onSuccess: () => void) {
-  //   const body = { company, date};
-  //   this.http.get(SESSION_API + 'sessions/search/findByCompanyAndDate',
-  //    {headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-  //   observe}).subscribe(
-  //     data => {
+  getSessionsByCompanyEmailAndDate(companyEmail: string, date: string): Observable<any> {
+    return this.http.get(SESSION_API + 'sessions/search/findByCompany_EmailAndDate?email=' + companyEmail + '&date=' + date);
+  }
 
-  //     },
-  //     err => {
+  getSessionsByPlayerEmail(playerEmail: string): Observable<any> {
+    return this.http.get(SESSION_API + 'sessions/search/findByParticipants_Email?email=' + playerEmail);
+  }
 
-  //     }
-  //   );
-  // }
+  getSessionById(id: string): Observable<any> {
+    return this.http.get(SESSION_API + 'sessions/' + id);
+  }
+
+  deleteSessionById(id: string): Observable<any> {
+    return this.http.delete(SESSION_API + 'sessions/' + id);
+  }
+
+  replaceSessionValue(id: string, path: string, value: any): Observable<any> {
+    return this.http.patch(SESSION_API + 'sessions/' + id,
+    [{
+      op: 'replace',
+      path,
+      value
+    }],
+    httpPatchOptions);
+  }
+
+  getIdFromSessionRequest(href: string): string {
+    return href.substring(31);
+  }
 }
 
 

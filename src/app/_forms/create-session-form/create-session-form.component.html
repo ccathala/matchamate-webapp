@@ -7,7 +7,7 @@
       class="form-control"
       (change)="onChangeRegionSelect($event.target.value)"
     >
-      <option value="" selected disabled>Sélectionner la région</option>
+      <option value="" selected>Sélectionner la région</option>
       <option *ngFor="let regionItem of regionList" [value]="regionItem.code">{{
         regionItem.nom
       }}</option>
@@ -26,7 +26,7 @@
       <option value="" selected>Sélectionner le département</option>
       <option
         *ngFor="let departementItem of queriedDepartementList"
-        value="departementItem.code"
+        [value]="departementItem.code"
         >{{ departementItem.nom }}</option
       >
     </select>
@@ -41,7 +41,7 @@
       formControlName="company"
       (ngModelChange)="setSelectedCompany($event)"
     >
-      <option value="" select disabled>Sélectionnez le lieu de pratique</option>
+      <option value="" select>Sélectionnez le lieu de pratique</option>
       <option
         *ngFor="let companyItem of queriedCompanyList"
         [ngValue]="companyItem"
@@ -88,11 +88,12 @@
   <div class="form-group">
     <label for="beginTime">Heure de début:</label>
     <select id="beginTime" formControlName="beginTime" class="form-control">
-      <option value="" selected disabled>Sélectionner l'heure de début</option>
+      <option value="" selected>Sélectionner l'heure de début</option>
       <option
         *ngFor="let dayScheduleItem of generatedDaySchedule"
         [value]="dayScheduleItem.hour"
-        >{{ dayScheduleItem.hour }}</option
+        [disabled]="!dayScheduleItem.isFree"
+        >{{ dayScheduleItem.hour }} <span *ngIf="!dayScheduleItem.isFree" > - Réservé</span></option
       >
     </select>
   </div>
@@ -105,7 +106,7 @@
       formControlName="maxPlayersNumber"
       class="form-control"
     >
-      <option value="" selected disabled
+      <option value="" selected
         >Sélectionner le nombre maximum de joueurs</option
       >
       <option value="2">2</option>
@@ -121,7 +122,7 @@
       formControlName="badmintonRequiredLevel"
       class="form-control"
     >
-      <option value="" selected disabled
+      <option value="" selected
         >Sélectionner le niveau de badminton requis</option
       >
       <option value="Débutant">Débutant</option>
