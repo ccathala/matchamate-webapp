@@ -1,4 +1,5 @@
 export class Slot {
-  hour: string;
+  display: string;
+  value: number;
   isFree: boolean;
 }

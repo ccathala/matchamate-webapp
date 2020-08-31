@@ -43,6 +43,16 @@ export class SessionApiService {
     return this.http.get(SESSION_API + 'sessions/' + id);
   }
 
+  getSessionsByHomeFilter(
+    regionCode: string,
+    departementCode: string,
+    companyName: string,
+    badmintonRequiredLevel: string): Observable<any> {
+    const request: string = 'sessions/search/findByCompany_Address_Region_CodeContainsAndCompany_Address_Departement_CodeContainsAndCompany_NameContainsAndBadmintonRequiredLevelContains?regionCode=' + regionCode + '&departementCode=' + departementCode + '&companyName=' + companyName + '&badmintonRequiredLevel=' + badmintonRequiredLevel ;
+    console.log(request);
+    return this.http.get(SESSION_API + request);
+  }
+
   deleteSessionById(id: string): Observable<any> {
     return this.http.delete(SESSION_API + 'sessions/' + id);
   }

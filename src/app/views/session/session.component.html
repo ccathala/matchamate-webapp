@@ -15,9 +15,8 @@
             <button class="btn" type="button" (click)="quitSession(session, userEmail)"><fa-icon [icon]="faTimesCircle" size="lg" class="text-danger"></fa-icon></button>
           </div>
         </div>
-
       </div>
-      <p *ngIf="bookedPlayers.length < session.participants.length && bookingEnabled">
+      <p *ngIf="bookedPlayers.length < session.participants.length && bookingEnabled && !userIsAlreadyBooked">
         <fa-icon [icon]="faPlus"></fa-icon> S'inscrire à la session
       </p>
     </div>
@@ -26,9 +25,9 @@
         <h4 class="mb-3">Session:</h4>
       </div>
       <div class="row pl-3">
-        <p class="mr-3">Date: {{ session.date }}</p>
-        <p class="mr-3">Heure de début: {{ session.beginTime }}</p>
-        <p>Heure de fin: {{ session.endTime }}</p>
+        <p class="mr-3">Date: {{ session.date | date: 'yyyy-MM-dd' }}</p>
+        <p class="mr-3">Heure de début: {{ session.beginTime.display }}</p>
+        <p>Heure de fin: {{ session.endTime.display }}</p>
       </div>
       <p>Niveau de pratique requis: {{ session.badmintonRequiredLevel }}</p>
       <p>Lieu: {{ session.company.name }}</p>

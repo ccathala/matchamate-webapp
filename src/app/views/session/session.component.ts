@@ -20,6 +20,7 @@ export class SessionComponent implements OnInit {
   bookingEnabled: boolean;
   @Input()
   quitEnabled: boolean;
+  userIsAlreadyBooked: boolean;
 
   constructor(private tokenStorage: TokenStorageService,
               private sessionApi: SessionApiService) { }
@@ -27,6 +28,7 @@ export class SessionComponent implements OnInit {
   ngOnInit(): void {
     this.userEmail = this.tokenStorage.getUser().email;
     this.bookedPlayers = this.session.participants.filter(e => e.email);
+    this.userIsAlreadyBooked = this.session.participants.some(e => e.email === this.userEmail);
   }
 
   quitSession(session: any, email: string): void {

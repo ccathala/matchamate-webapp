@@ -78,10 +78,11 @@ export class UtilsService {
         for (let j = openingTime; j < closingTime; j++) {
           const slot = new Slot();
           if (j < 10) {
-            slot.hour = '0' + j + ':00';
+            slot.display = '0' + j + ':00';
           } else {
-            slot.hour = j + ':00';
+            slot.display = j + ':00';
           }
+          slot.value = j;
           slot.isFree = true;
           dayScheduleList.push(slot);
         }

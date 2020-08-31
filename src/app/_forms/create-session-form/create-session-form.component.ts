@@ -9,7 +9,7 @@ import { DatePipe } from '@angular/common';
 import { CompanyApiService } from 'src/app/_services/_api/company-api.service';
 import { Subscription } from 'rxjs';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 
 @Component({
@@ -41,18 +41,18 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
 
   createSessionForm = new FormGroup({
     company: new FormControl('', [Validators.required]),
-    date: new FormControl(new Date(), [Validators.required]),
+    date: new FormControl('', [Validators.required]),
     beginTime: new FormControl('', [Validators.required]),
     maxPlayersNumber: new FormControl('', [Validators.required]),
     badmintonRequiredLevel: new FormControl('', [Validators.required])
   });
 
   constructor(private companyApi: CompanyApiService,
-    private utils: UtilsService,
-    private geoApi: GeoApiService,
-    private playerApi: PlayerApiService,
-    private sessionApi: SessionApiService,
-    private datePipe: DatePipe) { }
+              private utils: UtilsService,
+              private geoApi: GeoApiService,
+              private playerApi: PlayerApiService,
+              private sessionApi: SessionApiService,
+              private datePipe: DatePipe) { }
 
   ngOnInit(): void {
 
@@ -119,17 +119,25 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
     // Get form value
     const session = this.createSessionForm.value;
 
-    // Get beginTime hour value
-    const beginTimeNumber = this.utils.formatHoursToNumber(session.beginTime);
+    // // Get beginTime hour value
+    // const beginTimeNumber = this.utils.formatHoursToNumber(session.beginTime);
 
     // Get date with format yyyy-MM-dd
-    const date: string = this.datePipe.transform(this.createSessionForm.value.date, 'yyyy-MM-dd');
+    const dateFromForm: Date  = this.createSessionForm.value.date;
+    const offset = dateFromForm.getTimezoneOffset();
+    const dateWithOffset: Date = this.createSessionForm.value.date;
+    dateWithOffset.setMinutes(dateFromForm.getMinutes() + offset * -1);
+    console.log(dateWithOffset.toUTCString());
+    // const date: string = this.datePipe.transform(this.createSessionForm.value.date, 'yyyy-MM-dd');
 
     // Overrride session date value
-    session.date = date;
+    session.date = dateWithOffset;
+
+    // Set session beginTime
+    session.beginTime = {display: session.beginTime.display, value: session.beginTime.value};
 
     // Set session endTime
-    session.endTime = this.utils.formatNumberToHour(beginTimeNumber + 1);
+    session.endTime = {display: this.utils.formatNumberToHour(session.beginTime.value + 1), value: session.beginTime.value + 1};
 
     // Set session participants
     const player = this.player;
@@ -217,7 +225,7 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
    */
   addBookedSlotsToGeneratedDaySchedule(): void {
     for (const hourSlot of this.generatedDaySchedule) {
-      if (this.bookedSlots.includes(hourSlot.hour)) {
+      if (this.bookedSlots.includes(hourSlot.display)) {
         hourSlot.isFree = false;
       }
     }

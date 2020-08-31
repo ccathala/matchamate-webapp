@@ -1,5 +1,111 @@
-<div class="container">
-  <header class="jumbotron">
-    <p>{{ content }}</p>
-  </header>
+<div class="container mt-5">
+  <div class="bg-light p-4">
+    <h2>Rechercher une session de jeu</h2>
+    <hr />
+    <h3>Filtres:</h3>
+    <div class="row justify-content-center mt-3">
+      <div class="col-3 form-inline">
+        <select
+          id="region"
+          class="form-control"
+          (click)="onRegionChange($event.target.value)"
+        >
+          <option value="" selected>Toutes les régions</option>
+          <option [value]="region.code" *ngFor="let region of regionList">
+            {{ region.nom }}
+          </option>
+        </select>
+      </div>
+      <div class="col-3 form-inline">
+        <select
+          id="departement"
+          class="form-control"
+          (click)="onDepartementChange($event.target.value)"
+        >
+          <option value="" selected>Tout les départements</option>
+          <option
+            [value]="departement.code"
+            *ngFor="let departement of queriedDepartementList"
+          >
+            {{ departement.nom }}
+          </option>
+        </select>
+      </div>
+      <div class="col-3 form-inline">
+        <select
+          id="place"
+          class="form-control w-100"
+          (click)="onCompanyChange($event.target.value)"
+        >
+          <option value="" selected>Tout les lieux</option>
+          <option
+            [value]="company.name"
+            *ngFor="let company of queriedCompanyList"
+          >
+            {{ company.name }}
+          </option>
+        </select>
+      </div>
+      <div class="col-2 form-inline">
+        <select id="level" class="form-control ml-2" (click)="onLevelChange($event.target.value)">
+          <option value="" selected>Tout niveaux</option>
+          <option value="Débutant">Débutant</option>
+          <option value="Régulier">Régulier</option>
+          <option value="Confirmé">Confirmé</option>
+        </select>
+      </div>
+    </div>
+    <div class="row justify-content-between mt-3">
+      <!-- <div class="col-3">
+        <input
+          type="text"
+          placeholder="Selectionner la date"
+          class="form-control"
+          bsDaterangepicker
+          [bsValue]="bsRangeValue"
+          [minDate]="minDate"
+          (bsValueChange)="onDatechange($event)"
+        />
+      </div> -->
+      <!-- <div class="col-3 form-inline">
+        <label for="hourMin">De</label>
+        <select
+          id="hourMin"
+          class="form-control mx-2"
+          (click)="onHourMinChange($event.target.value)"
+        >
+          <option
+            [value]="hourMin.value"
+            *ngFor="let hourMin of hoursMin"
+            [selected]="hourMin.value == 0"
+          >
+            {{ hourMin.display }}
+          </option>
+        </select>
+        <label for="hourMax">à</label>
+        <select
+          id="hourMax"
+          class="form-control ml-2"
+          (click)="onHourMaxChange($event.target.value)"
+        >
+          <option
+            [value]="hourMax.value"
+            *ngFor="let hourMax of hoursMax"
+            [selected]="hourMax.value == 23"
+          >
+            {{ hourMax.display }}
+          </option>
+        </select>
+      </div> -->
+
+    </div>
+    <hr />
+    <app-session-view
+      *ngFor="let session of sessions"
+      [session]="session"
+      [bookingEnabled]="bookingEnabled"
+      [quitEnabled]="quitEnabled"
+    >
+    </app-session-view>
+  </div>
 </div>

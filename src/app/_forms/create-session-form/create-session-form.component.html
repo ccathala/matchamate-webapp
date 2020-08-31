@@ -67,7 +67,7 @@
           [datesDisabled]="disabledDates"
           [minDate]="minDate"
           (ngModelChange)="setSelectedDate($event)"
-          />
+          disabled/>
         </div>
 
 
@@ -91,9 +91,9 @@
       <option value="" selected>Sélectionner l'heure de début</option>
       <option
         *ngFor="let dayScheduleItem of generatedDaySchedule"
-        [value]="dayScheduleItem.hour"
+        [ngValue]="dayScheduleItem"
         [disabled]="!dayScheduleItem.isFree"
-        >{{ dayScheduleItem.hour }} <span *ngIf="!dayScheduleItem.isFree" > - Réservé</span></option
+        >{{ dayScheduleItem.display }} <span *ngIf="!dayScheduleItem.isFree" > - Réservé</span></option
       >
     </select>
   </div>
