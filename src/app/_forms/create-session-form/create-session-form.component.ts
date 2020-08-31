@@ -38,6 +38,7 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
   queriedCompanyList: any[];
   sessionCreationSuccess: boolean;
   bookedSlots: string[] = [];
+  levelSelect: any[] = [];
 
   createSessionForm = new FormGroup({
     company: new FormControl('', [Validators.required]),
@@ -91,6 +92,7 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
     this.playerSubscription = this.playerApi.playerSubject.subscribe(
       data => {
         this.player = data;
+        this.setLevelSelect(this.player.badmintonLevel);
       },
       err => {
         console.error(err);
@@ -142,7 +144,6 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
     // Set session participants
     const player = this.player;
     const maxPlayersNumber = this.createSessionForm.value.maxPlayersNumber;
-    player.isReady = false;
     session.participants = [];
     for (let index = 0; index < maxPlayersNumber; index++) {
       if (index == 0) {
@@ -157,6 +158,7 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
     sessionStorage.isReserved = false;
     session.isLocked = false;
     session.isDone = false;
+    session.isFull = false;
     session.isPlayed = false;
 
     // Create session by POST http request to session API
@@ -301,4 +303,18 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
     this.createSessionForm.controls.beginTime.disable();
   }
 
+
+  setLevelSelect(playerLevel: string): void {
+    this.levelSelect = [];
+    const debutant = 'Débutant';
+    const intermediaire = 'Intermédiaire';
+    const confirme = 'Confirmé';
+    if (playerLevel === debutant) {
+      this.levelSelect.push(debutant);
+    } else if (playerLevel === intermediaire) {
+      this.levelSelect.push(debutant, intermediaire);
+    } else {
+      this.levelSelect.push(debutant, intermediaire, confirme);
+    }
+  }
 }

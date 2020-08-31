@@ -48,7 +48,7 @@ export class SessionApiService {
     departementCode: string,
     companyName: string,
     badmintonRequiredLevel: string): Observable<any> {
-    const request: string = 'sessions/search/findByCompany_Address_Region_CodeContainsAndCompany_Address_Departement_CodeContainsAndCompany_NameContainsAndBadmintonRequiredLevelContains?regionCode=' + regionCode + '&departementCode=' + departementCode + '&companyName=' + companyName + '&badmintonRequiredLevel=' + badmintonRequiredLevel ;
+    const request: string = 'sessions/search/findByCompany_Address_Region_CodeContainsAndCompany_Address_Departement_CodeContainsAndCompany_NameContainsAndBadmintonRequiredLevelContainsAndIsFullFalse?regionCode=' + regionCode + '&departementCode=' + departementCode + '&companyName=' + companyName + '&badmintonRequiredLevel=' + badmintonRequiredLevel ;
     console.log(request);
     return this.http.get(SESSION_API + request);
   }

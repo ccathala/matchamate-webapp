@@ -49,6 +49,7 @@ export class RegisterComponent implements OnInit {
           },
           errAuthRegistration => {
             // User registration failure
+            console.error(errAuthRegistration);
             this.errorMessageAuthRegistration = errAuthRegistration.error.message;
             this.isSignUpFailed = true;
             this.playerApi.deletePlayerByEmail(this.registerForm.value.email).subscribe(
@@ -56,6 +57,7 @@ export class RegisterComponent implements OnInit {
                 console.log(data);
               },
               err => {
+                console.error(err);
                 this.errorMessage = err.error.message;
               }
             );

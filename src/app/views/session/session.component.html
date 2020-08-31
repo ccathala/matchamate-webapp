@@ -16,9 +16,10 @@
           </div>
         </div>
       </div>
-      <p *ngIf="bookedPlayers.length < session.participants.length && bookingEnabled && !userIsAlreadyBooked && isLoggedIn">
-        <fa-icon [icon]="faPlus"></fa-icon> S'inscrire à la session
-      </p>
+      <div *ngIf="bookedPlayers.length < session.participants.length && bookingEnabled && !userIsAlreadyBooked && isLoggedIn">
+       <button class="btn" type="button" (click)="addNewParticipantToSession()" *ngIf="playerLevelValue >= sessionLevelValue"><fa-icon [icon]="faPlus"></fa-icon> S'inscrire à la session</button>
+       <p class="text-danger" *ngIf="playerLevelValue < sessionLevelValue" >Vous n'avez pas le niveau requis pour vous inscrire à cette session.</p>
+      </div>
     </div>
     <div class="col-8 p-4">
       <div class="row pl-3">

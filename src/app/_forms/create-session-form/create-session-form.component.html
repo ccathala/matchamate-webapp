@@ -125,9 +125,7 @@
       <option value="" selected
         >Sélectionner le niveau de badminton requis</option
       >
-      <option value="Débutant">Débutant</option>
-      <option value="Régulier">Régulier</option>
-      <option value="Confirmé">Confirmé</option>
+      <option [value]="level" *ngFor="let level of levelSelect" >{{ level }}</option>
     </select>
   </div>
 
