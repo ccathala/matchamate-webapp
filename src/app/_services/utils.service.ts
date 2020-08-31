@@ -149,4 +149,16 @@ export class UtilsService {
     date.setHours(dateHours + offset);
     return date;
   }
+
+  /**
+   * Check if user is not already booked in session, return true if verified
+   */
+  checkUserIsNotBookedInSession(participants: any[], userEmail): boolean {
+    let userIsNotBookedInSession: boolean;
+    userIsNotBookedInSession = participants.some(e => e.email === userEmail);
+    if (!userIsNotBookedInSession) {
+      console.error('L\'utilisateur est déjà inscrit à la session');
+    }
+    return userIsNotBookedInSession;
+  }
 }

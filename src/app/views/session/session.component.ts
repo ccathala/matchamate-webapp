@@ -21,14 +21,23 @@ export class SessionComponent implements OnInit {
   @Input()
   quitEnabled: boolean;
   userIsAlreadyBooked: boolean;
+  isLoggedIn: boolean;
 
   constructor(private tokenStorage: TokenStorageService,
               private sessionApi: SessionApiService) { }
 
   ngOnInit(): void {
-    this.userEmail = this.tokenStorage.getUser().email;
+    this.isLoggedIn = !!this.tokenStorage.getUser();
+    if (this.isLoggedIn) {
+      this.userEmail = this.tokenStorage.getUser().email;
+    } else {
+      this.userEmail = '';
+    }
+
+
     this.bookedPlayers = this.session.participants.filter(e => e.email);
     this.userIsAlreadyBooked = this.session.participants.some(e => e.email === this.userEmail);
+    this.session.id = this.sessionApi.getIdFromSessionRequest(this.session._links.self.href);
   }
 
   quitSession(session: any, email: string): void {
@@ -80,4 +89,6 @@ export class SessionComponent implements OnInit {
       }
     );
   }
+
+  addNewParticipantToSession()
 }

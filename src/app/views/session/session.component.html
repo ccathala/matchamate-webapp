@@ -16,7 +16,7 @@
           </div>
         </div>
       </div>
-      <p *ngIf="bookedPlayers.length < session.participants.length && bookingEnabled && !userIsAlreadyBooked">
+      <p *ngIf="bookedPlayers.length < session.participants.length && bookingEnabled && !userIsAlreadyBooked && isLoggedIn">
         <fa-icon [icon]="faPlus"></fa-icon> S'inscrire à la session
       </p>
     </div>
