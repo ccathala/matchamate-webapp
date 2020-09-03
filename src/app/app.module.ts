@@ -27,6 +27,9 @@ import { PlayedSessionsComponent } from './player/played-sessions/played-session
 import { PlayerDataComponent } from './player/player-data/player-data.component';
 import { SessionComponent } from './views/session/session.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { CompanyBookedSessionsComponent } from './company/company-booked-sessions/company-booked-sessions.component';
+import { CompanyPlayedSessionsComponent } from './company/company-played-sessions/company-played-sessions.component';
+import { CompanyDataComponent } from './company/company-data/company-data.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +48,10 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     BookedSessionsComponent,
     PlayedSessionsComponent,
     PlayerDataComponent,
-    SessionComponent
+    SessionComponent,
+    CompanyBookedSessionsComponent,
+    CompanyPlayedSessionsComponent,
+    CompanyDataComponent
   ],
   imports: [
     BrowserModule,

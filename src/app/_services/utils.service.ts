@@ -1,9 +1,10 @@
+import { DatePipe } from '@angular/common';
 import { Slot } from './../_models/slot';
 import { PlayerApiService } from './_api/player-api.service';
 import { CompanyApiService } from './_api/company-api.service';
 import { Injectable } from '@angular/core';
-import { Observable, Subscription, Subject } from 'rxjs';
-import { stringify } from '@angular/compiler/src/util';
+import { Subject } from 'rxjs';
+
 
 const ID_KEY = 'user-id';
 
@@ -16,8 +17,9 @@ export class UtilsService {
   id: string;
 
   constructor(private companyApi: CompanyApiService,
-              private playerApi: PlayerApiService) {
-    console.log('init Utils service');
+              private playerApi: PlayerApiService,
+              private datePipe: DatePipe) {
+
   }
 
   saveUserIdKey(userId: string): void {
@@ -29,7 +31,7 @@ export class UtilsService {
     return localStorage.getItem(ID_KEY);
   }
 
-  async getUserFromApis(roles: string[], email: string, onSuccess: () => void): Promise<any> {
+  getUserFromApis(roles: string[], email: string, onSuccess: () => void): void {
     if (roles.includes('ROLE_COMPANY')) {
       this.companyApi.getCompanyByEmail(email, () => {
         onSuccess();
@@ -61,7 +63,7 @@ export class UtilsService {
    * Generate daySchedule from company object weekSchedule property and dayName parameter
    *
    */
-  generateCompanyDaySchedule(weekSchedule: any[], dayIndex: number): Slot[] {
+  generateCompanyDaySchedule(weekSchedule: any[], dayIndex: number, date: Date): Slot[] {
     // Init output list
     const dayScheduleList: Slot[] = [];
 
@@ -71,8 +73,15 @@ export class UtilsService {
       // when day is set
       if (daySchedule.dayIndex === dayIndex) {
         // Get hour values for opening/closing time
-        const openingTime = this.formatHoursToNumber(daySchedule.openingTime);
+        let openingTime = this.formatHoursToNumber(daySchedule.openingTime);
         const closingTime = this.formatHoursToNumber(daySchedule.closingTime);
+
+        const currentDateString = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
+        const selectedDateString = this.datePipe.transform(date, 'yyyy-MM-dd');
+
+        if (currentDateString === selectedDateString) {
+          openingTime = +this.datePipe.transform(new Date(), 'H') + 2;
+        }
 
         // Generate day schedule
         for (let j = openingTime; j < closingTime; j++) {

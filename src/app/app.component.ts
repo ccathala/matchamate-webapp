@@ -74,17 +74,17 @@ export class AppComponent implements OnInit, OnDestroy {
         });
       }
 
-      this.companyListSubscription = this.companyApi.companyListSubject.subscribe(
-        data => {
-          this.companyList = data;
-        },
-        err => {
-          console.error(err);
-        }
-      );
-      this.companyApi.getCompanies(() => { });
+      // this.companyListSubscription = this.companyApi.companyListSubject.subscribe(
+      //   data => {
+      //     this.companyList = data;
+      //   },
+      //   err => {
+      //     console.error(err);
+      //   }
+      // );
     }
-    this.companyApi.emitCompanyListSubject();
+    this.companyApi.getCompanies(() => { });
+    // this.companyApi.emitCompanyListSubject();
     this.geoApi.getDepartementList(() => { });
     this.geoApi.getRegionList(() => { });
   }

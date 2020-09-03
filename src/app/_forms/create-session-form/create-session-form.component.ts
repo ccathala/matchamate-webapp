@@ -9,7 +9,7 @@ import { DatePipe } from '@angular/common';
 import { CompanyApiService } from 'src/app/_services/_api/company-api.service';
 import { Subscription } from 'rxjs';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, SimpleChanges, Input } from '@angular/core';
 
 
 @Component({
@@ -37,7 +37,7 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
   queriedDepartementList: Departement[];
   queriedCompanyList: any[];
   sessionCreationSuccess: boolean;
-  bookedSlots: string[] = [];
+  bookedSlots: any[] = [];
   levelSelect: any[] = [];
 
   createSessionForm = new FormGroup({
@@ -49,11 +49,12 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
   });
 
   constructor(private companyApi: CompanyApiService,
-              private utils: UtilsService,
-              private geoApi: GeoApiService,
-              private playerApi: PlayerApiService,
-              private sessionApi: SessionApiService,
-              private datePipe: DatePipe) { }
+    private utils: UtilsService,
+    private geoApi: GeoApiService,
+    private playerApi: PlayerApiService,
+    private sessionApi: SessionApiService,
+    private datePipe: DatePipe) { }
+
 
   ngOnInit(): void {
 
@@ -67,6 +68,7 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
         console.error(err);
       }
     );
+    this.companyApi.emitCompanyListSubject();
 
     // Subscribe to departementList Subject
     this.departementListSubscription = this.geoApi.departementListSubject.subscribe(
@@ -77,6 +79,7 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
         console.error(err);
       }
     );
+    this.geoApi.emitDepartementListSubject();
 
     // Subscribe to regionList Subject
     this.regionListSubscription = this.geoApi.regionListSubject.subscribe(
@@ -87,22 +90,20 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
         console.error(err);
       }
     );
+    this.geoApi.emitRegionListSubject();
 
     // Subscribe to current Player Subject
     this.playerSubscription = this.playerApi.playerSubject.subscribe(
       data => {
         this.player = data;
-        this.setLevelSelect(this.player.badmintonLevel);
+        if (this.player) {
+          this.setLevelSelect(this.player.badmintonLevel);
+        }
       },
       err => {
         console.error(err);
       }
     );
-
-    // initialize data from subjects
-    this.companyApi.emitCompanyListSubject();
-    this.geoApi.emitDepartementListSubject();
-    this.geoApi.emitRegionListSubject();
     this.playerApi.emitPlayerSubject();
 
     // Disable beginTime formcontrol
@@ -125,21 +126,36 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
     // const beginTimeNumber = this.utils.formatHoursToNumber(session.beginTime);
 
     // Get date with format yyyy-MM-dd
-    const dateFromForm: Date  = this.createSessionForm.value.date;
-    const offset = dateFromForm.getTimezoneOffset();
-    const dateWithOffset: Date = this.createSessionForm.value.date;
-    dateWithOffset.setMinutes(dateFromForm.getMinutes() + offset * -1);
-    console.log(dateWithOffset.toUTCString());
-    // const date: string = this.datePipe.transform(this.createSessionForm.value.date, 'yyyy-MM-dd');
+    // const dateFromForm: Date  = this.createSessionForm.value.date;
+    // const offset = dateFromForm.getTimezoneOffset();
+    // const dateWithOffset: Date = this.createSessionForm.value.date;
+    // dateWithOffset.setMinutes(dateFromForm.getMinutes() + offset * -1);
+    // console.log(dateWithOffset.toUTCString());
+    const dateString: string = this.datePipe.transform(this.createSessionForm.value.date, 'yyyy-MM-dd');
+    const date = new Date(dateString);
 
     // Overrride session date value
-    session.date = dateWithOffset;
+    session.date = date;
+
+    // Set begin time variable
+    const beginTime = new Date(date.valueOf());
+    beginTime.setHours(date.getHours() + session.beginTime.value);
 
     // Set session beginTime
-    session.beginTime = {display: session.beginTime.display, value: session.beginTime.value};
+    session.beginTime = {
+      display: session.beginTime.display,
+      value: session.beginTime.value,
+      dateTime: beginTime};
+
+    // Set begin time variable
+    const endTime = new Date(date.valueOf());
+    endTime.setHours(date.getHours() + session.beginTime.value + 1);
 
     // Set session endTime
-    session.endTime = {display: this.utils.formatNumberToHour(session.beginTime.value + 1), value: session.beginTime.value + 1};
+    session.endTime = {
+       display: this.utils.formatNumberToHour(session.beginTime.value + 1),
+        value: session.beginTime.value + 1,
+        dateTime: endTime };
 
     // Set session participants
     const player = this.player;
@@ -156,6 +172,7 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
     // Set session default parameters
     session.readyParticipantsCount = 0;
     sessionStorage.isReserved = false;
+    session.isReserved = false;
     session.isLocked = false;
     session.isDone = false;
     session.isFull = false;
@@ -164,6 +181,8 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
     // Create session by POST http request to session API
     this.sessionApi.createSession(session, () => {
       this.sessionCreationSuccess = true;
+      this.setDaySchedule(this.selectedCompany, this.selectedDate);
+      this.createSessionForm.controls.beginTime.setValue('');
     },
       () => {
         this.sessionCreationSuccess = false;
@@ -193,7 +212,7 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
    */
   setDaySchedule(company: any, date: Date): void {
     if (company && date) {
-      this.generatedDaySchedule = this.utils.generateCompanyDaySchedule(company.weekSchedule, date.getDay());
+      this.generatedDaySchedule = this.utils.generateCompanyDaySchedule(company.weekSchedule, date.getDay(), date);
       const year: string = date.getFullYear().toString();
       const month: string = this.utils.formatNumberToStringWithTwoDigits(date.getMonth() + 1);
       const day: string = this.utils.formatNumberToStringWithTwoDigits(date.getDate());
@@ -227,7 +246,7 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
    */
   addBookedSlotsToGeneratedDaySchedule(): void {
     for (const hourSlot of this.generatedDaySchedule) {
-      if (this.bookedSlots.includes(hourSlot.display)) {
+      if (this.bookedSlots.some(e => e.value === hourSlot.value)) {
         hourSlot.isFree = false;
       }
     }

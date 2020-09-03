@@ -3,7 +3,7 @@ import { PlayerApiService } from './../../_services/_api/player-api.service';
 import { SessionApiService } from './../../_services/_api/session-api.service';
 import { TokenStorageService } from './../../_services/token-storage.service';
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { faPlus, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTimesCircle, faTimes, faLock } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-session-view',
@@ -15,52 +15,80 @@ export class SessionComponent implements OnInit, OnDestroy {
   @Input()
   session: any;
   userEmail: string;
+  userRole: string;
   bookedPlayers: any[];
   faPlus = faPlus;
   faTimesCircle = faTimesCircle;
+  faTimes = faTimes;
+  faLock = faLock;
   @Input()
   bookingEnabled: boolean;
   @Input()
   quitEnabled: boolean;
   userIsAlreadyBooked: boolean;
   isLoggedIn: boolean;
+  sessionIsLock = false;
   player: any;
   playerSubcription: Subscription;
   playerLevelValue: number;
   sessionLevelValue: number;
+  @Input()
+  bookedSessionPage: boolean;
+  displayAnnulationTemplate: boolean;
 
   constructor(private tokenStorage: TokenStorageService,
-              private sessionApi: SessionApiService,
-              private playerApi: PlayerApiService) { }
+    private sessionApi: SessionApiService,
+    private playerApi: PlayerApiService) { }
 
   ngOnInit(): void {
     this.isLoggedIn = !!this.tokenStorage.getUser();
     if (this.isLoggedIn) {
       this.userEmail = this.tokenStorage.getUser().email;
+      this.userRole = this.tokenStorage.getUser().roles[0];
     } else {
       this.userEmail = '';
+      this.userRole = '';
     }
 
+    // Get session booked players
     this.bookedPlayers = this.session.participants.filter(e => e.email);
+
+    // Check if user is already booked
     this.userIsAlreadyBooked = this.session.participants.some(e => e.email === this.userEmail);
+
+    // Get session id
     this.session.id = this.sessionApi.getIdFromSessionRequest(this.session._links.self.href);
 
-    this.playerSubcription = this.playerApi.playerSubject.subscribe(
-      data => {
-        this.player = data;
-      },
-      err => {
-        console.error(err);
-      }
-    );
-    this.playerApi.emitPlayerSubject();
+    // If user has Player role declare player subscription
+    if (this.userRole === 'ROLE_PLAYER') {
+      this.playerSubcription = this.playerApi.playerSubject.subscribe(
+        data => {
+          this.player = data;
+          if (this.player) {
+            this.playerLevelValue = this.setLevelValue(this.player.badmintonLevel);
+          }
+        },
+        err => {
+          console.error(err);
+        }
+      );
+      this.playerApi.emitPlayerSubject();
+    }
 
     this.sessionLevelValue = this.setLevelValue(this.session.badmintonRequiredLevel);
-    this.playerLevelValue = this.setLevelValue(this.player.badmintonLevel);
+    this.displayAnnulationTemplate = false;
+
+    if (this.session.isLocked) {
+      this.quitEnabled = false;
+      this.sessionIsLock = true;
+    }
   }
 
   ngOnDestroy(): void {
-    this.playerSubcription.unsubscribe();
+    // If user has Player role unsubscribe player subscription
+    if (this.userRole === 'ROLE_PLAYER') {
+      this.playerSubcription.unsubscribe();
+    }
   }
 
   quitSession(session: any, email: string): void {
@@ -69,16 +97,29 @@ export class SessionComponent implements OnInit, OnDestroy {
     const path = '/participants/' + index;
     const value = {};
 
+    // Update participants list
     this.sessionApi.replaceSessionValue(id, path, value).subscribe(
       data => {
         console.log(data);
-        this.deleteSessionIfNoParticipants(session);
-        window.location.reload();
+        // Update isFull to false
+        this.sessionApi.replaceSessionValue(id, 'isFull', false).subscribe(
+          dataIsFull => {
+            console.log(dataIsFull);
+            this.deleteSessionIfNoParticipants(session);
+            window.location.reload();
+          },
+          errIsFull => {
+            console.error(errIsFull);
+          }
+        );
+
       },
       err => {
         console.error(err);
       }
     );
+
+
   }
 
   getUserIndexFromParticipants(participants: [], email: string): number {
@@ -144,7 +185,7 @@ export class SessionComponent implements OnInit, OnDestroy {
     }
   }
 
-  getEmptyPlayerSlotIndex(participants: any []): number {
+  getEmptyPlayerSlotIndex(participants: any[]): number {
     let playerSlotIndex;
     let emptyPlayerSlotFound = false;
 
@@ -188,6 +229,26 @@ export class SessionComponent implements OnInit, OnDestroy {
 
     // Add player to session
     this.sessionApi.replaceSessionValue(id, path, value).subscribe(
+      data => {
+        console.log(data);
+        window.location.reload();
+      },
+      err => {
+        console.error(err);
+      }
+    );
+  }
+
+  enableAnnulationTemplate(): void {
+    this.displayAnnulationTemplate = true;
+  }
+
+  disableAnnulationTemplate(): void {
+    this.displayAnnulationTemplate = false;
+  }
+
+  cancelSession(sessionId: string, motif: string): void {
+    this.sessionApi.deleteSessionById(sessionId).subscribe(
       data => {
         console.log(data);
         window.location.reload();

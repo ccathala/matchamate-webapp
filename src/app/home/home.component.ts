@@ -86,6 +86,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.bsRangeValue = [new Date(), new Date(dayDate.setMonth(dayDate.getMonth() + 1))];
     this.selectedDate = this.bsRangeValue;
 
+    // Region Subscription
     this.regionListSubscription = this.geoApi.regionListSubject.subscribe(
       data => {
         this.regionList = data;
@@ -96,6 +97,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     );
     this.geoApi.emitRegionListSubject();
 
+    // Departement Subscription
     this.departementListSubscription = this.geoApi.departementListSubject.subscribe(
       data => {
         this.departementList = data;
@@ -107,6 +109,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     );
     this.geoApi.emitDepartementListSubject();
 
+    // Company List Subscription
     this.companyListSubscription = this.companyApi.companyListSubject.subscribe(
       data => {
         this.companyList = data;

@@ -1,3 +1,4 @@
+import { SessionApiService } from './../_services/_api/session-api.service';
 import { GeoApiService } from './../_services/_api/geo-api.service';
 import { CompanyApiService } from './../_services/_api/company-api.service';
 import { TokenStorageService } from './../_services/token-storage.service';
@@ -10,43 +11,23 @@ import { Subscription } from 'rxjs';
   templateUrl: './board-company.component.html',
   styleUrls: ['./board-company.component.scss']
 })
-export class BoardCompanyComponent implements OnInit, OnDestroy {
+export class BoardCompanyComponent implements OnInit {
 
-  companyEmail: string;
-  company: any;
-  companySubscription: Subscription;
-  isCompanyDataModificationInProgress = false;
+  sessions: any[];
 
-  constructor(private companyApi: CompanyApiService) {}
+  constructor(private tokenStorage: TokenStorageService,
+              private sessionApi: SessionApiService) { }
 
   ngOnInit(): void {
-    this.companySubscription = this.companyApi.companySubject.subscribe(
-      companyData => {
-        this.company = companyData;
+    const email = this.tokenStorage.getUser().email;
+    this.sessionApi.getSessionsByCompanyEmail(email).subscribe(
+      data => {
+        this.sessions = data._embedded.sessions;
       },
       err => {
         console.error(err);
       }
     );
-    this.companyApi.emitCompanySubject();
-  }
 
-  ngOnDestroy(): void {
-    this.companySubscription.unsubscribe();
   }
-
-  enableCompanyDataModification(): void {
-    this.isCompanyDataModificationInProgress = true;
-  }
-
-  disableCompanyDataModification(): void {
-    this.isCompanyDataModificationInProgress = false;
-  }
-
-  onDisableCompanyDataModificationInProgress(event: boolean): void {
-    if (!event) {
-      this.disableCompanyDataModification();
-    }
-  }
-
 }

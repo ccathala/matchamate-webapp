@@ -35,6 +35,10 @@ export class SessionApiService {
     return this.http.get(SESSION_API + 'sessions/search/findByCompany_EmailAndDate?email=' + companyEmail + '&date=' + date);
   }
 
+  getSessionsByCompanyEmail(companyEmail: string): Observable<any> {
+    return this.http.get(SESSION_API + 'sessions/search/findByCompany_Email?email=' + companyEmail);
+  }
+
   getSessionsByPlayerEmail(playerEmail: string): Observable<any> {
     return this.http.get(SESSION_API + 'sessions/search/findByParticipants_Email?email=' + playerEmail);
   }
@@ -48,7 +52,7 @@ export class SessionApiService {
     departementCode: string,
     companyName: string,
     badmintonRequiredLevel: string): Observable<any> {
-    const request: string = 'sessions/search/findByCompany_Address_Region_CodeContainsAndCompany_Address_Departement_CodeContainsAndCompany_NameContainsAndBadmintonRequiredLevelContainsAndIsFullFalse?regionCode=' + regionCode + '&departementCode=' + departementCode + '&companyName=' + companyName + '&badmintonRequiredLevel=' + badmintonRequiredLevel ;
+    const request: string = 'sessions/search/findByCompany_Address_Region_CodeContainsAndCompany_Address_Departement_CodeContainsAndCompany_NameContainsAndBadmintonRequiredLevelContainsAndIsFullFalseAndIsDoneFalse?regionCode=' + regionCode + '&departementCode=' + departementCode + '&companyName=' + companyName + '&badmintonRequiredLevel=' + badmintonRequiredLevel ;
     console.log(request);
     return this.http.get(SESSION_API + request);
   }

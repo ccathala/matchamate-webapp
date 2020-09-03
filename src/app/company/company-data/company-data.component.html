@@ -1,0 +1,61 @@
+<div class="bg-light p-4" *ngIf="!isCompanyDataModificationInProgress">
+  <h2>Informations:</h2>
+  <hr />
+  <p>Nom: {{ company.name }}</p>
+  <p>Email: {{ company.email }}</p>
+  <p>Téléphone: {{ company.phone }}</p>
+  <p>Site web: {{ company.web }}</p>
+  <p>
+    Adresse: {{ company.address.buildingNumber }}
+    {{ company.address.street }} {{ company.address.city }}
+    {{ company.address.zipCode }}
+  </p>
+  <p>Département: {{ company.address.departement.nom }}</p>
+  <p>Région: {{ company.address.region.nom }}</p>
+  <h2 class="mt-5">Horaires:</h2>
+  <hr />
+  <p>
+    Lundi: {{ company.weekSchedule[0].openingTime }} -
+    {{ company.weekSchedule[0].closingTime }}
+  </p>
+  <p>
+    Mardi: {{ company.weekSchedule[1].openingTime }} -
+    {{ company.weekSchedule[1].closingTime }}
+  </p>
+  <p>
+    Mercredi: {{ company.weekSchedule[2].openingTime }} -
+    {{ company.weekSchedule[2].closingTime }}
+  </p>
+  <p>
+    Jeudi: {{ company.weekSchedule[3].openingTime }} -
+    {{ company.weekSchedule[3].closingTime }}
+  </p>
+  <p>
+    Vendredi: {{ company.weekSchedule[4].openingTime }} -
+    {{ company.weekSchedule[4].closingTime }}
+  </p>
+  <p>
+    Samedi: {{ company.weekSchedule[5].openingTime }} -
+    {{ company.weekSchedule[5].closingTime }}
+  </p>
+  <p>
+    Dimanche: {{ company.weekSchedule[6].openingTime }} -
+    {{ company.weekSchedule[6].closingTime }}
+  </p>
+  <div class="text-right">
+    <button class="btn btn-primary" (click)="enableCompanyDataModification()">
+      Modifier
+    </button>
+  </div>
+</div>
+
+<div class="bg-light p-4" *ngIf="isCompanyDataModificationInProgress">
+  <app-data-company-form
+    [isCompanyDataModificationInProgress]="
+      isCompanyDataModificationInProgress
+    "
+    (isCompanyDataModificationInProgressEvent)="
+      onDisableCompanyDataModificationInProgress($event)
+    "
+  ></app-data-company-form>
+</div>
