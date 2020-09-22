@@ -247,8 +247,8 @@ export class SessionComponent implements OnInit, OnDestroy {
     this.displayAnnulationTemplate = false;
   }
 
-  cancelSession(sessionId: string, motif: string): void {
-    this.sessionApi.deleteSessionById(sessionId).subscribe(
+  cancelReservation(sessionId: string, motif: string): void {
+    this.sessionApi.reservationCancel(sessionId, motif, this.session).subscribe(
       data => {
         console.log(data);
         window.location.reload();

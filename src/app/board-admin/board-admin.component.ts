@@ -1,7 +1,10 @@
+import { element } from 'protractor';
+import { SessionApiService } from './../_services/_api/session-api.service';
+import { Subscription } from 'rxjs';
 import { AuthService } from './../_services/auth.service';
 import { CompanyApiService } from './../_services/_api/company-api.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../_services/user.service';
 
 @Component({
@@ -9,7 +12,7 @@ import { UserService } from '../_services/user.service';
   templateUrl: './board-admin.component.html',
   styleUrls: ['./board-admin.component.scss']
 })
-export class BoardAdminComponent implements OnInit {
+export class BoardAdminComponent implements OnInit, OnDestroy {
 
   isSuccessful = false;
   isSignUpFailed = false;
@@ -17,6 +20,12 @@ export class BoardAdminComponent implements OnInit {
   errorMessageAuthRegistration = '';
   errorMessageCompanyRegistration = '';
   errorMessage = '';
+  companyList: any[];
+  companyListSubscription: Subscription;
+  selectedCompany: any;
+  selectedCompanySessions: any[];
+  companyDeleteIsSuccessful: boolean;
+  companyDeleteFailed: boolean;
 
   registerCompanyForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -27,7 +36,11 @@ export class BoardAdminComponent implements OnInit {
 
   content: string;
 
-  constructor(private userService: UserService, private companyApi: CompanyApiService, private authService: AuthService) { }
+  constructor(private userService: UserService,
+    private companyApi: CompanyApiService,
+    private authService: AuthService,
+    private sessionApi: SessionApiService) { }
+
 
   ngOnInit(): void {
     this.userService.getAdminBoard().subscribe(
@@ -38,6 +51,20 @@ export class BoardAdminComponent implements OnInit {
         this.content = JSON.parse(err.error).message;
       }
     );
+
+    this.companyListSubscription = this.companyApi.companyListSubject.subscribe(
+      data => {
+        this.companyList = data;
+      },
+      err => {
+        console.error(err);
+      }
+    );
+    this.companyApi.emitCompanyListSubject();
+  }
+
+  ngOnDestroy(): void {
+    this.companyListSubscription.unsubscribe();
   }
 
   onSubmit(): void {
@@ -53,43 +80,50 @@ export class BoardAdminComponent implements OnInit {
       weekSchedule: []
     };
 
-    form.companyOpeningHours = {
-      monday: {
-        dayName: 'lundi',
-        openingTime: '',
-        closingTime: ''
-      },
-      tuesday: {
-        dayName: 'mardi',
-        openingTime: '',
-        closingTime: ''
-      },
-      wednesday: {
-        dayName: 'mercredi',
-        openingTime: '',
-        closingTime: ''
-      },
-      thursday: {
-        dayName: 'jeudi',
-        openingTime: '',
-        closingTime: ''
-      },
-      friday: {
-        dayName: 'vendredi',
-        openingTime: '',
-        closingTime: ''
-      },
-      saturday: {
-        dayName: 'samedi',
-        openingTime: '',
-        closingTime: ''
-      },
-      sunday: {
-        dayName: 'dimanche',
-        openingTime: '',
-        closingTime: ''
-      },
-    };
+    form.weekSchedule = [{
+      dayName: 'monday',
+      dayIndex: 1,
+      openingTime: '00:00',
+      closingTime: '23:00'
+    },
+    {
+      dayName: 'tuesday',
+      dayIndex: 2,
+      openingTime: '00:00',
+      closingTime: '23:00'
+    },
+    {
+      dayName: 'wednesday',
+      dayIndex: 3,
+      openingTime: '00:00',
+      closingTime: '23:00'
+    },
+    {
+      dayName: 'thursday',
+      dayIndex: 4,
+      openingTime: '00:00',
+      closingTime: '23:00'
+    },
+    {
+      dayName: 'friday',
+      dayIndex: 5,
+      openingTime: '00:00',
+      closingTime: '23:00'
+    },
+    {
+      dayName: 'saturday',
+      dayIndex: 6,
+      openingTime: '00:00',
+      closingTime: '23:00'
+    },
+    {
+      dayName: 'sunday',
+      dayIndex: 0,
+      openingTime: '00:00',
+      closingTime: '23:00'
+    }];
+
+    form.companyDataIsSet = false;
 
     // Register Company in Company-api
     this.companyApi.registerCompany(form).subscribe(
@@ -126,22 +160,109 @@ export class BoardAdminComponent implements OnInit {
         this.isSignUpFailed = true;
       }
     );
+    this.companyApi.getCompanies(() => {});
   }
 
-  get email(): any{
+  get email(): any {
     return this.registerCompanyForm.get('email');
   }
 
-  get password(): any{
+  get password(): any {
     return this.registerCompanyForm.get('password');
   }
 
-  get passwordConfirm(): any{
+  get passwordConfirm(): any {
     return this.registerCompanyForm.get('passwordConfirm');
   }
 
-  get name(): any{
+  get name(): any {
     return this.registerCompanyForm.get('name');
   }
 
+  setSelectedCompany(companyName: string): void {
+    this.selectedCompany = this.getCompanyByNameFromCompanyList(companyName);
+    this.getSessionByCompanyEmail(this.selectedCompany.email);
+  }
+
+  deleteSelectedCompany(): void {
+    if (confirm('Confirmer la suppression de la compagnie ' + this.selectedCompany.name)) {
+          this.deleteEachSessionFromSessionList(this.selectedCompanySessions, () => {
+            this.deleteCompanyFromAllServices(this.selectedCompany, () => {
+              this.companyDeleteIsSuccessful = true;
+              this.companyDeleteFailed = false;
+              this.companyApi.getCompanies(() => {});
+            });
+          });
+
+    }
+  }
+
+  getCompanyByNameFromCompanyList(companyName: string): any {
+    let companyToReturn = null;
+    for (const company of this.companyList) {
+      if (company.name === companyName) {
+        companyToReturn = company;
+      }
+    }
+    return companyToReturn;
+  }
+
+  deleteEachSessionFromSessionList(sessions: any[], onSuccess: () => void): void {
+    for (const session of sessions) {
+      const id = this.sessionApi.getIdFromSessionRequest(session._links.self.href);
+      this.sessionApi.deleteSessionById(id).subscribe(
+        data => {
+          console.log(data);
+        },
+        err => {
+          console.error(err);
+          this.companyDeleteIsSuccessful = false;
+          this.companyDeleteFailed = true;
+        }
+      );
+    }
+    onSuccess();
+  }
+
+  deleteCompanyFromAllServices(company: any, onSuccess: () => void): void {
+    this.companyApi.deleteCompanyByEmail(company.email).subscribe(
+      dataCompany => {
+        this.authService.deleteUser(company.email).subscribe(
+          dataAuth => {
+            console.log(dataAuth);
+            onSuccess();
+          },
+          errAuth => {
+            this.companyApi.registerCompany(company).subscribe(
+              data => {
+                console.log(data);
+              },
+              err => {
+                this.companyDeleteIsSuccessful = false;
+                this.companyDeleteFailed = true;
+                console.error(err);
+              }
+            );
+          }
+        );
+      },
+      errCompany => {
+        this.companyDeleteIsSuccessful = false;
+        this.companyDeleteFailed = true;
+        console.error(errCompany);
+      }
+    );
+  }
+
+  getSessionByCompanyEmail(companyEmail: string): void {
+    this.selectedCompanySessions = [];
+    this.sessionApi.getSessionsByCompanyEmail(companyEmail).subscribe(
+      data => {
+        this.selectedCompanySessions = data._embedded.sessions;
+      },
+      err => {
+        console.error(err);
+      }
+    );
+  }
 }

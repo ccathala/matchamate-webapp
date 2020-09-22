@@ -93,6 +93,7 @@ export class UtilsService {
           }
           slot.value = j;
           slot.isFree = true;
+          slot.userSubscribed = false;
           dayScheduleList.push(slot);
         }
       }

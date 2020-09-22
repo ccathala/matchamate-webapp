@@ -1,3 +1,5 @@
+import { AuthService } from './../_services/auth.service';
+import { TokenStorageService } from './../_services/token-storage.service';
 import { DatePipe } from '@angular/common';
 import { SessionApiService } from './../_services/_api/session-api.service';
 import { CompanyApiService } from './../_services/_api/company-api.service';
@@ -23,6 +25,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   selectedDate: Date[];
   sessions: any[];
   minDate: Date = new Date();
+
 
   hours = [
     { display: '00:00', value: 0 },
@@ -66,9 +69,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   bsRangeValue: Date[];
 
   constructor(private sessionApi: SessionApiService,
-    private geoApi: GeoApiService,
-    private companyApi: CompanyApiService,
-    private datePipe: DatePipe) { }
+              private geoApi: GeoApiService,
+              private companyApi: CompanyApiService,
+              private datePipe: DatePipe,
+              private tokenStorage: TokenStorageService,
+              private auth: AuthService) { }
 
 
   ngOnDestroy(): void {
@@ -121,34 +126,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     );
     this.companyApi.emitCompanyListSubject();
     this.onFilterChange('', '', '', '');
-
   }
 
 
 
-  onHourMinChange(hourMin: any): void {
-    this.selectedHourMin = hourMin;
-    this.hoursMax = [];
-    // tslint:disable-next-line: prefer-for-of
-    for (let index = 0; index < this.hours.length; index++) {
-      const element = this.hours[index];
-      if (element.value > hourMin) {
-        this.hoursMax.push(element);
-      }
-    }
-  }
 
-  onHourMaxChange(hourMax: any): void {
-    this.selectedHourMax = hourMax;
-    this.hoursMin = [];
-    // tslint:disable-next-line: prefer-for-of
-    for (let index = 0; index < this.hours.length; index++) {
-      const element = this.hours[index];
-      if (element.value < hourMax) {
-        this.hoursMin.push(element);
-      }
-    }
-  }
 
   onRegionChange(codeRegion: string): void {
     this.selectedRegionCode = codeRegion;
@@ -209,7 +191,7 @@ export class HomeComponent implements OnInit, OnDestroy {
    * QueriedDepartementList setter
    */
   setQueryDepartementList(codeRegion: string): void {
-    if (codeRegion == '') {
+    if (codeRegion === '') {
       this.queriedDepartementList = this.departementList;
     } else {
       this.queriedDepartementList = this.departementList.filter(e => e.codeRegion === codeRegion);
@@ -248,5 +230,4 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
     );
   }
-
 }

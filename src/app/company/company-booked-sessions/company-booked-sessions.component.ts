@@ -31,7 +31,7 @@ export class CompanyBookedSessionsComponent implements OnInit, OnChanges {
   extractBookedSessionsFromSessions(): void {
     this.bookedSessions = [];
     for (const session of this.sessions) {
-      if (!session.isDone && session.isReserved) {
+      if (!session.isDone && session.isFull) {
         session.id = this.sessionApi.getIdFromSessionRequest(session._links.self.href);
         this.bookedSessions.push(session);
       }

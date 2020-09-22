@@ -1,4 +1,4 @@
-<div class="bg-light p-4 mt-3" *ngIf="!isPlayerModificationInProgress">
+<div class="p-4 mt-3" *ngIf="!isPlayerModificationInProgress">
   <h2>Informations:</h2>
   <hr />
   <p>Prénom: {{ player.firstName }}</p>
@@ -13,7 +13,7 @@
   </div>
 </div>
 
-<div class="bg-light p-4" *ngIf="isPlayerModificationInProgress">
+<div class="p-4" *ngIf="isPlayerModificationInProgress">
   <app-data-player-form
     [isPlayerModificationInProgress]="
       isPlayerModificationInProgress

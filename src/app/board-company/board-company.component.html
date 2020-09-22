@@ -1,13 +1,15 @@
-<div class="container mt-5">
-  <tabset>
-    <tab heading="Sessions de jeu à venir">
-      <app-company-booked-sessions [sessions]="sessions"></app-company-booked-sessions>
-    </tab>
-    <tab heading="Sessions de jeu passées">
-      <app-company-played-sessions [sessions]="sessions"></app-company-played-sessions>
-    </tab>
-    <tab heading="Informations de l'entreprise">
-      <app-company-data></app-company-data>
-    </tab>
-  </tabset>
+<div class="container mt-3">
+  <div class="bg-light p-4">
+    <tabset>
+      <tab heading="Sessions de jeu à venir">
+        <app-company-booked-sessions [sessions]="sessions"></app-company-booked-sessions>
+      </tab>
+      <tab heading="Sessions de jeu passées">
+        <app-company-played-sessions [sessions]="sessions"></app-company-played-sessions>
+      </tab>
+      <tab heading="Informations de l'entreprise">
+        <app-company-data></app-company-data>
+      </tab>
+    </tabset>
+  </div>
 </div>

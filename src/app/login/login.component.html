@@ -3,12 +3,12 @@
     *ngIf="!isLoggedIn"
     [formGroup]="loginForm"
     (ngSubmit)="onSubmit()"
-    class="loginForm mx-auto"
+    class="loginForm mx-auto p-4 rounded-lg bg-light"
   >
     <h1>Connexion</h1>
-    <div class="form-group">
+    <div class="form-group mx-3">
       <input
-        class="form-control"
+        class="form-control mb-2"
         type="text"
         formControlName="email"
         placeholder="Email"
@@ -24,7 +24,7 @@
         class="form-control"
         type="password"
         formControlName="password"
-        placeholder="Password"
+        placeholder="Mot de passe"
       />
       <div
         class="alert- alert-danger"

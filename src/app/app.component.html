@@ -1,32 +1,61 @@
-<nav class="navbar navbar-expand bg-dark justify-content-between">
-  <!-- Links -->
-  <ul class="navbar-nav">
-    <li class="mr-3">
-      <a routerLink="/home" routerLinkActive="active">Home</a>
-    </li>
-    <li class="mr-3" *ngIf="showPlayerBoard">
-      <a routerLink="/player" routerLinkActive="active">Profil</a>
-    </li>
-    <li class="mr-3" *ngIf="showCompanyBoard">
-      <a routerLink="/company" routerLinkActive="active">Profil</a>
-    </li>
-    <li class="mr-3" *ngIf="showAdminBoard">
-      <a routerLink="/admin" routerLinkActive="active" >Administration</a>
-    </li>
-    <li class="mr-3" *ngIf="showCreateSession">
-      <a routerLink="/create-session" routerLinkActive="active">Créer une session</a>
-    </li>
-  </ul>
-  <ul class="navbar-nav">
-    <li *ngIf="!isLoggedIn">
-      <a routerLink="/signin" routerLinkActive="active" class="btn btn-primary mr-2">Connexion</a>
-    </li>
-    <li *ngIf="!isLoggedIn">
-      <a routerLink="/signup" routerLinkActive="active" class="btn btn-primary" >S'inscrire</a>
-    </li>
-    <li *ngIf="isLoggedIn">
-      <a class="btn btn-danger" (click)="logout()" >Déconnexion</a>
-    </li>
-  </ul>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-between">
+
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <button class="navbar-toggler collapsed" type="button" (click)="isCollapsed = !isCollapsed">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" [collapse]="isCollapsed">
+      <ul class="navbar-nav mr-auto">
+        <li class="mr-3 mt-lg-0 mt-3">
+          <a routerLink="/home" routerLinkActive="active">Home</a>
+        </li>
+        <li class="mr-3" *ngIf="showPlayerBoard">
+          <a routerLink="/player" routerLinkActive="active">Profil</a>
+        </li>
+        <li class="mr-3" *ngIf="showCompanyBoard">
+          <a routerLink="/company" routerLinkActive="active">Profil</a>
+        </li>
+        <li class="mr-3" *ngIf="showAdminBoard">
+          <a routerLink="/admin" routerLinkActive="active">Administration</a>
+        </li>
+        <li class="mr-3" *ngIf="showCreateSession">
+          <a routerLink="/create-session" routerLinkActive="active"
+            >Créer une session</a
+          >
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        <li>
+          <p
+            class="text-white my-2 mr-2"
+            *ngIf="isLoggedIn && tokenValidationDone"
+          >
+            {{ email }}
+          </p>
+        </li>
+        <li *ngIf="!isLoggedIn">
+          <a
+            routerLink="/signin"
+            routerLinkActive="active"
+            class="btn btn-primary mr-2 mb-lg-0 mb-2"
+            >Connexion</a
+          >
+        </li>
+        <li *ngIf="!isLoggedIn">
+          <a
+            routerLink="/signup"
+            routerLinkActive="active"
+            class="btn btn-primary mb-lg-0 mb-2"
+            >S'inscrire</a
+          >
+        </li>
+        <li *ngIf="isLoggedIn && tokenValidationDone">
+          <a class="btn btn-danger mb-lg-0 mb-2" (click)="logout()">Déconnexion</a>
+        </li>
+      </ul>
+    </div>
 </nav>
 <router-outlet></router-outlet>

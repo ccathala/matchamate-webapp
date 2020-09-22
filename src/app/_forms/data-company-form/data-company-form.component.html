@@ -1,14 +1,16 @@
 <form [formGroup]="companyDatamodificationForm" (ngSubmit)="onSubmit()">
   <div class="form-group">
-    <div class="form-group">
-      <label for="name">Nom de la compagnie:</label>
-      <input
-        id="name"
-        formControlName="name"
-        type="text"
-        class="form-control mb-2"
-        placeholder="Nom de la compagnie"
-      />
+    <div class="row">
+      <div class="form-group col-md-6 col-lg-4">
+        <label for="name">Nom de la compagnie:</label>
+        <input
+          id="name"
+          formControlName="name"
+          type="text"
+          class="form-control mb-2"
+          placeholder="Nom de la compagnie"
+        />
+      </div>
     </div>
 
     <div class="form-group">
@@ -23,94 +25,109 @@
       />
     </div>
 
-    <div class="form-group">
-      <label for="phone">Téléphone:</label>
-      <input
-        id="phone"
-        formControlName="phone"
-        type="text"
-        class="form-control mb-2"
-        placeholder="Téléphone"
-      />
+    <div class="row">
+      <div class="form-group col-md-6 col-lg-4">
+        <label for="phone">Téléphone:</label>
+        <input
+          id="phone"
+          formControlName="phone"
+          type="text"
+          class="form-control mb-2"
+          placeholder="Téléphone"
+        />
+      </div>
     </div>
 
-    <div class="form-group">
-      <label for="web">Site web</label>
-      <input
-        id="web"
-        formControlName="web"
-        type="text"
-        class="form-control mb-2"
-        placeholder="Site web"
-      />
+    <div class="row">
+      <div class="form-group col-md-6 col-lg-4">
+        <label for="web">Site web</label>
+        <input
+          id="web"
+          formControlName="web"
+          type="text"
+          class="form-control mb-2"
+          placeholder="Site web"
+        />
+      </div>
     </div>
 
     <div formGroupName="address">
-      <div class="form-group">
-        <label for="buildingNumber">Numéro de bâtiment:</label>
-        <input
-          id="buildingNumber"
-          type="text"
-          class="form-control"
-          formControlName="buildingNumber"
-          placeholder="Numéro de bâtiment"
-        />
+      <div class="row">
+        <div class="form-group col-md-6 col-lg-4">
+          <label for="buildingNumber">Numéro de bâtiment:</label>
+          <input
+            id="buildingNumber"
+            type="text"
+            class="form-control"
+            formControlName="buildingNumber"
+            placeholder="Numéro de bâtiment"
+          />
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="street">Rue</label>
-        <input
-          id="street"
-          type="text"
-          class="form-control"
-          formControlName="street"
-          placeholder="Rue"
-        />
+      <div class="row">
+        <div class="form-group col-md-6 col-lg-4">
+          <label for="street">Rue</label>
+          <input
+            id="street"
+            type="text"
+            class="form-control"
+            formControlName="street"
+            placeholder="Rue"
+          />
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="city">Ville:</label>
-        <input
-          id="city"
-          type="text"
-          class="form-control"
-          formControlName="city"
-          placeholder="Ville"
-        />
+      <div class="row">
+        <div class="form-group col-md-6 col-lg-4">
+          <label for="city">Ville:</label>
+          <input
+            id="city"
+            type="text"
+            class="form-control"
+            formControlName="city"
+            placeholder="Ville"
+          />
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="zipCode">Code postal:</label>
-        <input
-          id="zipCode"
-          type="text"
-          class="form-control"
-          formControlName="zipCode"
-          placeholder="Code Postal"
-        />
+      <div class="row">
+        <div class="form-group col-md-6 col-lg-4">
+          <label for="zipCode">Code postal:</label>
+          <input
+            id="zipCode"
+            type="text"
+            class="form-control"
+            formControlName="zipCode"
+            placeholder="Code Postal"
+          />
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="departement">Département:</label>
-        <select
-          id="departement"
-          class="form-control"
-          formControlName="departement"
-        >
-          <option value="">Sélectionner le département</option>
-          <option
-            *ngFor="let departementItem of departementList"
-            [value]="departementItem.code"
-            >{{ departementItem.code }}-{{ departementItem.nom }}</option
+      <div class="row">
+        <div class="form-group col-md-6 col-lg-4">
+          <label for="departement">Département:</label>
+          <select
+            id="departement"
+            class="form-control"
+            formControlName="departement"
           >
-        </select>
+            <option value="">Sélectionner le département</option>
+            <option
+              *ngFor="let departementItem of departementList"
+              [value]="departementItem.code"
+            >
+              {{ departementItem.code }}-{{ departementItem.nom }}
+            </option>
+          </select>
+        </div>
       </div>
     </div>
 
     <div formGroupName="weekSchedule">
       <h2 class="my-4">Horaires:</h2>
       <div class="form-group form-row" formGroupName="monday">
-        <div class="col-1 m-auto text-right">
+        <div class="col-3 col-md-2 col-lg-2 col-xl-1 my-auto text-left">
           <label class="m-auto" for="lundi">Lundi: </label>
           <input
             id="lundi"
@@ -119,26 +136,34 @@
             formControlName="dayName"
           />
         </div>
-        <div class="col">
-          <select class="form-control" formControlName="openingTime">
+        <div class="col-4 col-sm-3 col-md-2">
+          <select
+            class="form-control"
+            formControlName="openingTime"
+            (click)="onMondayOpeningHourChange($event.target.value)"
+          >
             <option value="">Sélectionner l'heure d'ouverture</option>
-            <option *ngFor="let hour of hoursList" value="{{ hour }}">{{
-              hour
-            }}</option>
+            <option *ngFor="let hour of mondayOpeningHours" value="{{ hour }}">
+              {{ hour }}
+            </option>
           </select>
         </div>
-        <div class="col">
-          <select class="form-control" formControlName="closingTime">
+        <div class="col-4 col-sm-3 col-md-2">
+          <select
+            class="form-control"
+            formControlName="closingTime"
+            (click)="onMondayClosingHourChange($event.target.value)"
+          >
             <option value="">Sélectionner l'heure de fermeture</option>
-            <option *ngFor="let hour of hoursList" value="{{ hour }}">{{
-              hour
-            }}</option>
+            <option *ngFor="let hour of mondayClosingHours" value="{{ hour }}">
+              {{ hour }}
+            </option>
           </select>
         </div>
       </div>
 
       <div class="form-group form-row" formGroupName="tuesday">
-        <div class="col-1 m-auto text-right">
+        <div class="col-3 col-md-2 col-lg-2 col-xl-1 my-auto text-left">
           <label class="m-auto" for="mardi">Mardi: </label>
           <input
             id="mardi"
@@ -147,26 +172,34 @@
             formControlName="dayName"
           />
         </div>
-        <div class="col">
-          <select class="form-control" formControlName="openingTime">
+        <div class="col-4 col-sm-3 col-md-2">
+          <select
+            class="form-control"
+            formControlName="openingTime"
+            (click)="onTuesdayOpeningHourChange($event.target.value)"
+          >
             <option value="">Sélectionner l'heure d'ouverture</option>
-            <option *ngFor="let hour of hoursList" value="{{ hour }}">{{
-              hour
-            }}</option>
+            <option *ngFor="let hour of tuesdayOpeningHours" value="{{ hour }}">
+              {{ hour }}
+            </option>
           </select>
         </div>
-        <div class="col">
-          <select class="form-control" formControlName="closingTime">
+        <div class="col-4 col-sm-3 col-md-2">
+          <select
+            class="form-control"
+            formControlName="closingTime"
+            (click)="onTuesdayClosingHourChange($event.target.value)"
+          >
             <option value="">Sélectionner l'heure de fermeture</option>
-            <option *ngFor="let hour of hoursList" value="{{ hour }}">{{
-              hour
-            }}</option>
+            <option *ngFor="let hour of tuesdayClosingHours" value="{{ hour }}">
+              {{ hour }}
+            </option>
           </select>
         </div>
       </div>
 
       <div class="form-group form-row" formGroupName="wednesday">
-        <div class="col-1 m-auto text-right">
+        <div class="col-3 col-md-2 col-lg-2 col-xl-1 my-auto text-left">
           <label class="m-auto" for="mercredi">Mercredi: </label>
           <input
             id="mercredi"
@@ -175,26 +208,40 @@
             formControlName="dayName"
           />
         </div>
-        <div class="col">
-          <select class="form-control" formControlName="openingTime">
+        <div class="col-4 col-sm-3 col-md-2">
+          <select
+            class="form-control"
+            formControlName="openingTime"
+            (click)="onWednesdayOpeningHourChange($event.target.value)"
+          >
             <option value="">Sélectionner l'heure d'ouverture</option>
-            <option *ngFor="let hour of hoursList" value="{{ hour }}">{{
-              hour
-            }}</option>
+            <option
+              *ngFor="let hour of wednesdayOpeningHours"
+              value="{{ hour }}"
+            >
+              {{ hour }}
+            </option>
           </select>
         </div>
-        <div class="col">
-          <select class="form-control" formControlName="closingTime">
+        <div class="col-4 col-sm-3 col-md-2">
+          <select
+            class="form-control"
+            formControlName="closingTime"
+            (click)="onWednesdayClosingHourChange($event.target.value)"
+          >
             <option value="">Sélectionner l'heure de fermeture</option>
-            <option *ngFor="let hour of hoursList" value="{{ hour }}">{{
-              hour
-            }}</option>
+            <option
+              *ngFor="let hour of wednesdayClosingHours"
+              value="{{ hour }}"
+            >
+              {{ hour }}
+            </option>
           </select>
         </div>
       </div>
 
       <div class="form-group form-row" formGroupName="thursday">
-        <div class="col-1 m-auto text-right">
+        <div class="col-3 col-md-2 col-lg-2 col-xl-1 my-auto text-left">
           <label class="m-auto" for="jeudi">Jeudi: </label>
           <input
             id="jeudi"
@@ -203,26 +250,40 @@
             formControlName="dayName"
           />
         </div>
-        <div class="col">
-          <select class="form-control" formControlName="openingTime">
+        <div class="col-4 col-sm-3 col-md-2">
+          <select
+            class="form-control"
+            formControlName="openingTime"
+            (click)="onThursdayOpeningHourChange($event.target.value)"
+          >
             <option value="">Sélectionner l'heure d'ouverture</option>
-            <option *ngFor="let hour of hoursList" value="{{ hour }}">{{
-              hour
-            }}</option>
+            <option
+              *ngFor="let hour of thursdayOpeningHours"
+              value="{{ hour }}"
+            >
+              {{ hour }}
+            </option>
           </select>
         </div>
-        <div class="col">
-          <select class="form-control" formControlName="closingTime">
+        <div class="col-4 col-sm-3 col-md-2">
+          <select
+            class="form-control"
+            formControlName="closingTime"
+            (click)="onThursdayClosingHourChange($event.target.value)"
+          >
             <option value="">Sélectionner l'heure de fermeture</option>
-            <option *ngFor="let hour of hoursList" value="{{ hour }}">{{
-              hour
-            }}</option>
+            <option
+              *ngFor="let hour of thursdayClosingHours"
+              value="{{ hour }}"
+            >
+              {{ hour }}
+            </option>
           </select>
         </div>
       </div>
 
       <div class="form-group form-row" formGroupName="friday">
-        <div class="col-1 m-auto text-right">
+        <div class="col-3 col-md-2 col-lg-2 col-xl-1 my-auto text-left">
           <label class="m-auto" for="vendredi">Vendredi: </label>
           <input
             id="vendredi"
@@ -231,26 +292,34 @@
             formControlName="dayName"
           />
         </div>
-        <div class="col">
-          <select class="form-control" formControlName="openingTime">
+        <div class="col-4 col-sm-3 col-md-2">
+          <select
+            class="form-control"
+            formControlName="openingTime"
+            (click)="onFridayOpeningHourChange($event.target.value)"
+          >
             <option value="">Sélectionner l'heure d'ouverture</option>
-            <option *ngFor="let hour of hoursList" value="{{ hour }}">{{
-              hour
-            }}</option>
+            <option *ngFor="let hour of fridayOpeningHours" value="{{ hour }}">
+              {{ hour }}
+            </option>
           </select>
         </div>
-        <div class="col">
-          <select class="form-control" formControlName="closingTime">
+        <div class="col-4 col-sm-3 col-md-2">
+          <select
+            class="form-control"
+            formControlName="closingTime"
+            (click)="onFridayClosingHourChange($event.target.value)"
+          >
             <option value="">Sélectionner l'heure de fermeture</option>
-            <option *ngFor="let hour of hoursList" value="{{ hour }}">{{
-              hour
-            }}</option>
+            <option *ngFor="let hour of fridayClosingHours" value="{{ hour }}">
+              {{ hour }}
+            </option>
           </select>
         </div>
       </div>
 
       <div class="form-group form-row" formGroupName="saturday">
-        <div class="col-1 m-auto text-right">
+        <div class="col-3 col-md-2 col-lg-2 col-xl-1 my-auto text-left">
           <label class="m-auto" for="jeudi">Samedi: </label>
           <input
             id="samedi"
@@ -260,27 +329,41 @@
           />
         </div>
 
-        <div class="col">
-          <select class="form-control" formControlName="openingTime">
+        <div class="col-4 col-sm-3 col-md-2">
+          <select
+            class="form-control"
+            formControlName="openingTime"
+            (click)="onSaturdayOpeningHourChange($event.target.value)"
+          >
             <option value="">Sélectionner l'heure d'ouverture</option>
-            <option *ngFor="let hour of hoursList" value="{{ hour }}">{{
-              hour
-            }}</option>
+            <option
+              *ngFor="let hour of saturdayOpeningHours"
+              value="{{ hour }}"
+            >
+              {{ hour }}
+            </option>
           </select>
         </div>
-        <div class="col">
-          <select class="form-control" formControlName="closingTime">
+        <div class="col-4 col-sm-3 col-md-2">
+          <select
+            class="form-control"
+            formControlName="closingTime"
+            (click)="onSaturdayClosingHourChange($event.target.value)"
+          >
             <option value="">Sélectionner l'heure de fermeture</option>
-            <option *ngFor="let hour of hoursList" value="{{ hour }}">{{
-              hour
-            }}</option>
+            <option
+              *ngFor="let hour of saturdayClosingHours"
+              value="{{ hour }}"
+            >
+              {{ hour }}
+            </option>
           </select>
         </div>
       </div>
 
-      <div class="form-group form-row" formGroupName="sunday">
-        <div class="col-1 m-auto text-right">
-          <label class="m-auto" for="jeudi">Dimanche: </label>
+      <div class="form-group form-row " formGroupName="sunday">
+        <div class="col-3 col-md-2 col-lg-2 col-xl-1 my-auto text-left">
+          <label class="my-auto" for="jeudi">Dimanche: </label>
           <input
             id="dimanche"
             class="sr-only"
@@ -288,27 +371,41 @@
             formControlName="dayName"
           />
         </div>
-        <div class="col">
-          <select class="form-control" formControlName="openingTime">
+        <div class="col-4 col-sm-3 col-md-2">
+          <select
+            class="form-control"
+            formControlName="openingTime"
+            (click)="onSundayOpeningHourChange($event.target.value)"
+          >
             <option value="">Sélectionner l'heure d'ouverture</option>
-            <option *ngFor="let hour of hoursList" value="{{ hour }}">{{
-              hour
-            }}</option>
+            <option *ngFor="let hour of sundayOpeningHours" value="{{ hour }}">
+              {{ hour }}
+            </option>
           </select>
         </div>
-        <div class="col">
-          <select class="form-control" formControlName="closingTime">
+        <div class="col-4 col-sm-3 col-md-2">
+          <select
+            class="form-control"
+            formControlName="closingTime"
+            (click)="onSundayClosingHourChange($event.target.value)"
+          >
             <option value="">Sélectionner l'heure de fermeture</option>
-            <option *ngFor="let hour of hoursList" value="{{ hour }}">{{
-              hour
-            }}</option>
+            <option *ngFor="let hour of sundayClosingHours" value="{{ hour }}">
+              {{ hour }}
+            </option>
           </select>
         </div>
       </div>
     </div>
   </div>
   <div class="text-right">
-    <button class="btn btn-success mr-2" type="submit">Enregistrer</button>
+    <button
+      class="btn btn-success mr-2"
+      type="submit"
+      [disabled]="!companyDatamodificationForm.valid"
+    >
+      Enregistrer
+    </button>
     <button
       class="btn btn-danger"
       type="button"

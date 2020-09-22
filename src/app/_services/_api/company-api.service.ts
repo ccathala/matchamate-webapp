@@ -53,7 +53,7 @@ export class CompanyApiService {
   }
 
   getCompanies(onSuccess: () => void): void {
-    this.http.get(COMPANY_API + 'companies').subscribe(
+    this.http.get(COMPANY_API + 'companies/search/findByCompanyDataIsSetTrueOrderByAddress_Departement_CodeAsc').subscribe(
       (data: any) => {
         this.companyList = data._embedded.companies;
         this.emitCompanyListSubject();

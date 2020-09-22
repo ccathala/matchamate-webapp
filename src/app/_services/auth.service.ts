@@ -38,4 +38,17 @@ export class AuthService {
       roles
     }, httpOptions);
   }
+
+  deleteUser(userEmail: string): Observable<any> {
+    return this.http.delete(AUTH_API + 'deleteuser?email=' + userEmail);
+  }
+
+  refreshToken(tokenString: string): Observable<any> {
+    console.log('Refresh token');
+    return this.http.post(AUTH_API + 'refreshtoken', tokenString, httpOptions);
+  }
+
+  validateToken(tokenString: string): Observable<any> {
+    return this.http.post(AUTH_API + 'validatetoken', tokenString, httpOptions);
+  }
 }

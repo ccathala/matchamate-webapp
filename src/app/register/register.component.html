@@ -3,12 +3,12 @@
     *ngIf="!isSuccessful"
     [formGroup]="registerForm"
     (ngSubmit)="onSubmit()"
-    class="registerForm mx-auto"
+    class="registerForm mx-auto p-4 rounded-lg bg-light"
   >
-    <h1>Inscription</h1>
     <div class="form-group">
+      <h1>Inscription</h1>
       <input
-        class="form-control"
+        class="form-control mb-2"
         type="text"
         formControlName="email"
         placeholder="Email"
@@ -21,10 +21,10 @@
         <div *ngIf="email.errors.email">Email must be valid</div>
       </div>
       <input
-        class="form-control"
+        class="form-control mb-2"
         type="password"
         formControlName="password"
-        placeholder="Password"
+        placeholder="Mot de passe"
       />
       <div
         class="alert- alert-danger"
@@ -36,29 +36,32 @@
         </div>
       </div>
       <input
-        class="form-control"
+        class="form-control mb-2"
         type="password"
         formControlName="passwordConfirm"
-        placeholder="Password"
+        placeholder="Confirmer mot de passe"
       />
       <input
-        class="form-control"
+        class="form-control mb-2"
         type="text"
         formControlName="firstName"
-        placeholder="Firstname"
+        placeholder="Prénom"
       />
       <input
-        class="form-control"
+        class="form-control mb-2"
         type="text"
         formControlName="lastName"
-        placeholder="Lastname"
+        placeholder="Nom"
       />
-      <select class="form-control" formControlName="gender">
-        <option value="">Selectionnez votre genre</option>
+      <select class="form-control mb-2" formControlName="gender">
+        <option value="" selected disabled>Selectionner votre genre</option>
         <option value="Femme">Femme</option>
         <option value="Homme">Homme</option>
       </select>
-      <select class="form-control" formControlName="badmintonLevel">
+      <select class="form-control mb-2 " formControlName="badmintonLevel">
+        <option value="" selected disabled>
+          Sélectionner votre niveau
+        </option>
         <option value="Débutant">Débutant</option>
         <option value="Régulier">Régulier</option>
         <option value="Confirmé">Confirmé</option>

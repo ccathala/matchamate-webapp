@@ -37,7 +37,8 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
   queriedDepartementList: Departement[];
   queriedCompanyList: any[];
   sessionCreationSuccess: boolean;
-  bookedSlots: any[] = [];
+  bookedCompanySlots: any[] = [];
+  bookedUserSlots: any[] = [];
   levelSelect: any[] = [];
 
   createSessionForm = new FormGroup({
@@ -217,6 +218,7 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
       const month: string = this.utils.formatNumberToStringWithTwoDigits(date.getMonth() + 1);
       const day: string = this.utils.formatNumberToStringWithTwoDigits(date.getDate());
       this.setBookedSlotsByCompanyEmailAndDate(company.email, year + '-' + month + '-' + day);
+      this.setBookedSlotByUser(this.player.email, year + '-' + month + '-' + day);
     }
   }
 
@@ -225,15 +227,37 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
    */
   setBookedSlotsByCompanyEmailAndDate(companyEmail: string, date: string): void {
     let sessions: any[];
-    this.bookedSlots = [];
-    this.sessionApi.getSessionsByCompanyEmailAndDate(companyEmail, date).subscribe(
+    this.bookedCompanySlots = [];
+    const currentDate = new Date(date);
+    const dateMilis = currentDate.getTime();
+    this.sessionApi.getSessionsByCompanyEmailAndDate(companyEmail, dateMilis.toString()).subscribe(
       data => {
         sessions = data._embedded.sessions;
         for (const session of sessions) {
-          this.bookedSlots.push(session.beginTime);
+          if (session.isFull) {
+            this.bookedCompanySlots.push(session.beginTime);
+          }
         }
-        this.addBookedSlotsToGeneratedDaySchedule();
-        console.log(this.generatedDaySchedule);
+        this.addBookedCompanySlotsToGeneratedDaySchedule();
+      },
+      err => {
+        console.error(err);
+      }
+    );
+  }
+
+  setBookedSlotByUser(userEmail: string, date: string): void {
+    let sessions: any[];
+    this.bookedUserSlots = [];
+    const currentDate = new Date(date);
+    const dateMilis = currentDate.getTime();
+    this.sessionApi.getSessionsByUserEmailAndDate(userEmail, dateMilis.toString()).subscribe(
+      data => {
+        sessions = data._embedded.sessions;
+        for (const session of sessions) {
+          this.bookedUserSlots.push(session.beginTime);
+        }
+        this.addBookedUserSlotsToGeneratedDaySchedule();
       },
       err => {
         console.error(err);
@@ -242,15 +266,28 @@ export class CreateSessionFormComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Add booked slot to day schedule
+   * Add booked company slot to day schedule
    */
-  addBookedSlotsToGeneratedDaySchedule(): void {
+  addBookedCompanySlotsToGeneratedDaySchedule(): void {
     for (const hourSlot of this.generatedDaySchedule) {
-      if (this.bookedSlots.some(e => e.value === hourSlot.value)) {
+      if (this.bookedCompanySlots.some(e => e.value === hourSlot.value)) {
         hourSlot.isFree = false;
       }
     }
   }
+
+  /**
+   * Add booked user slot to day schedule
+   */
+  addBookedUserSlotsToGeneratedDaySchedule(): void {
+    for (const hourSlot of this.generatedDaySchedule) {
+      if (this.bookedUserSlots.some(e => e.value === hourSlot.value)) {
+        hourSlot.userSubscribed = true;
+      }
+    }
+  }
+
+
 
 
   /**

@@ -1,60 +1,66 @@
 <form [formGroup]="createSessionForm" (ngSubmit)="onSubmit()">
-  <!-- Region input -->
-  <div class="form-group">
-    <label for="regionList">Région:</label>
-    <select
-      id="regionList"
-      class="form-control"
-      (change)="onChangeRegionSelect($event.target.value)"
-    >
-      <option value="" selected>Sélectionner la région</option>
-      <option *ngFor="let regionItem of regionList" [value]="regionItem.code">{{
-        regionItem.nom
-      }}</option>
-    </select>
+  <div class="row">
+    <!-- Region input -->
+    <div class="form-group col-md-6 col-lg-4">
+      <label for="regionList">Région:</label>
+      <select
+        id="regionList"
+        class="form-control"
+        (change)="onChangeRegionSelect($event.target.value)"
+      >
+        <option value="" selected>Sélectionner la région</option>
+        <option *ngFor="let regionItem of regionList" [value]="regionItem.code">{{
+          regionItem.nom
+        }}</option>
+      </select>
+    </div>
   </div>
 
-  <!-- Departement input -->
-  <div class="form-group">
-    <label for="departementList">Région:</label>
-    <select
-      id="departementList"
-      class="form-control"
-      [disabled]="!selectedRegion"
-      (change)="onChangeDepartementSelect($event.target.value)"
-    >
-      <option value="" selected>Sélectionner le département</option>
-      <option
-        *ngFor="let departementItem of queriedDepartementList"
-        [value]="departementItem.code"
-        >{{ departementItem.nom }}</option
+  <div class="row">
+    <!-- Departement input -->
+    <div class="form-group col-md-6 col-lg-4">
+      <label for="departementList">Département:</label>
+      <select
+        id="departementList"
+        class="form-control"
+        [disabled]="!selectedRegion"
+        (change)="onChangeDepartementSelect($event.target.value)"
       >
-    </select>
+        <option value="" selected>Sélectionner le département</option>
+        <option
+          *ngFor="let departementItem of queriedDepartementList"
+          [value]="departementItem.code"
+          >{{ departementItem.nom }}</option
+        >
+      </select>
+    </div>
   </div>
 
-  <!-- Company input -->
-  <div class="form-group">
-    <label for="company">Structure:</label>
-    <select
-      id="company"
-      class="form-control"
-      formControlName="company"
-      (ngModelChange)="setSelectedCompany($event)"
-    >
-      <option value="" select>Sélectionnez le lieu de pratique</option>
-      <option
-        *ngFor="let companyItem of queriedCompanyList"
-        [ngValue]="companyItem"
-        >{{ companyItem.name }}</option
+  <div class="row">
+    <!-- Company input -->
+    <div class="form-group col-md-6 col-lg-4">
+      <label for="company">Structure:</label>
+      <select
+        id="company"
+        class="form-control"
+        formControlName="company"
+        (ngModelChange)="setSelectedCompany($event)"
       >
-    </select>
+        <option value="" select>Sélectionnez le lieu de pratique</option>
+        <option
+          *ngFor="let companyItem of queriedCompanyList"
+          [ngValue]="companyItem"
+          >{{ companyItem.name }}</option
+        >
+      </select>
+    </div>
   </div>
 
   <!-- Date input -->
   <div class="form-group">
     <label for="date">Date:</label>
     <div class="row">
-      <div class="col-3 form-group">
+      <div class="form-group col-6 col-lg-2">
         <input
           id="date"
           type="text"
@@ -71,7 +77,7 @@
         </div>
 
 
-      <div class="col-3 form-group">
+      <div class="form-group col-6 col-lg-3">
         <button
           class="btn btn-primary"
           (click)="dp.toggle()"
@@ -84,49 +90,55 @@
     </div>
   </div>
 
-  <!-- Time input -->
-  <div class="form-group">
-    <label for="beginTime">Heure de début:</label>
-    <select id="beginTime" formControlName="beginTime" class="form-control">
-      <option value="" selected>Sélectionner l'heure de début</option>
-      <option
-        *ngFor="let dayScheduleItem of generatedDaySchedule"
-        [ngValue]="dayScheduleItem"
-        [disabled]="!dayScheduleItem.isFree"
-        >{{ dayScheduleItem.display }} <span *ngIf="!dayScheduleItem.isFree" > - Réservé</span></option
-      >
-    </select>
+  <div class="row">
+    <!-- Time input -->
+    <div class="form-group col-md-6 col-lg-4">
+      <label for="beginTime">Heure de début:</label>
+      <select id="beginTime" formControlName="beginTime" class="form-control">
+        <option value="" selected>Sélectionner l'heure de début</option>
+        <option
+          *ngFor="let dayScheduleItem of generatedDaySchedule"
+          [ngValue]="dayScheduleItem"
+          [disabled]="!dayScheduleItem.isFree || dayScheduleItem.userSubscribed"
+          >{{ dayScheduleItem.display }} <span *ngIf="!dayScheduleItem.isFree" > - Réservé</span><span *ngIf="dayScheduleItem.userSubscribed" > - Vous êtes déjà inscrit à une session sur ce créneau horaire</span></option
+        >
+      </select>
+    </div>
   </div>
 
-  <!-- Max players number input -->
-  <div class="form-group">
-    <label for="maxPlayersNumber">Nombre maximum de joueurs:</label>
-    <select
-      id="maxPlayersNumber"
-      formControlName="maxPlayersNumber"
-      class="form-control"
-    >
-      <option value="" selected
-        >Sélectionner le nombre maximum de joueurs</option
+  <div class="row">
+    <!-- Max players number input -->
+    <div class="form-group col-md-6 col-lg-5">
+      <label for="maxPlayersNumber">Nombre maximum de joueurs:</label>
+      <select
+        id="maxPlayersNumber"
+        formControlName="maxPlayersNumber"
+        class="form-control"
       >
-      <option value="2">2</option>
-      <option value="4">4</option>
-    </select>
+        <option value="" selected
+          >Sélectionner le nombre maximum de joueurs</option
+        >
+        <option value="2">2</option>
+        <option value="4">4</option>
+      </select>
+    </div>
   </div>
 
-  <!-- Badminton level required input -->
-  <div class="form-group">
-    <label for="badmintonRequiredLevel">Niveau de badminton requis:</label>
-    <select
-      id="badmintonRequiredLevel"
-      formControlName="badmintonRequiredLevel"
-      class="form-control"
-    >
-      <option value="" selected
-        >Sélectionner le niveau de badminton requis</option
+  <div class="row">
+    <!-- Badminton level required input -->
+    <div class="form-group col-md-6 col-lg-5">
+      <label for="badmintonRequiredLevel">Niveau de badminton requis:</label>
+      <select
+        id="badmintonRequiredLevel"
+        formControlName="badmintonRequiredLevel"
+        class="form-control"
       >
-      <option [value]="level" *ngFor="let level of levelSelect" >{{ level }}</option>
-    </select>
+        <option value="" selected
+          >Sélectionner le niveau de badminton requis</option
+        >
+        <option [value]="level" *ngFor="let level of levelSelect" >{{ level }}</option>
+      </select>
+    </div>
   </div>
 
   <div class="text-right">

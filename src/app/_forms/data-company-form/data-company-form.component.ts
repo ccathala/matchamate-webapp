@@ -31,7 +31,8 @@ const hours = [
   '20:00',
   '21:00',
   '22:00',
-  '23:00'];
+  '23:00'
+];
 
 @Component({
   selector: 'app-data-company-form',
@@ -49,8 +50,20 @@ export class DataCompanyFormComponent implements OnInit, OnDestroy {
   regionList: Region[] = [];
   regionListSubscription: Subscription;
   selectedRegion: Region;
-  @Input()
-  hoursList: string[] = hours;
+  mondayOpeningHours: any[] = hours;
+  mondayClosingHours: any[] = hours;
+  tuesdayOpeningHours: any[] = hours;
+  tuesdayClosingHours: any[] = hours;
+  wednesdayOpeningHours: any[] = hours;
+  wednesdayClosingHours: any[] = hours;
+  thursdayOpeningHours: any[] = hours;
+  thursdayClosingHours: any[] = hours;
+  fridayOpeningHours: any[] = hours;
+  fridayClosingHours: any[] = hours;
+  saturdayOpeningHours: any[] = hours;
+  saturdayClosingHours: any[] = hours;
+  sundayOpeningHours: any[] = hours;
+  sundayClosingHours: any[] = hours;
   @Input()
   isCompanyDataModificationInProgress: boolean;
   @Output()
@@ -64,11 +77,11 @@ export class DataCompanyFormComponent implements OnInit, OnDestroy {
     phone: new FormControl(''),
     web: new FormControl(''),
     address: new FormGroup({
-      buildingNumber: new FormControl(''),
-      street: new FormControl(''),
-      city: new FormControl(''),
-      zipCode: new FormControl(''),
-      departement: new FormControl(''),
+      buildingNumber: new FormControl('', [Validators.required]),
+      street: new FormControl('', [Validators.required]),
+      city: new FormControl('', [Validators.required]),
+      zipCode: new FormControl('', [Validators.required]),
+      departement: new FormControl('', [Validators.required]),
     }),
     weekSchedule: new FormGroup({
       monday: new FormGroup({
@@ -187,12 +200,15 @@ export class DataCompanyFormComponent implements OnInit, OnDestroy {
     // Override companyData.region
     companyData.address.region = this.getRegionByCode(companyData.address.departement.codeRegion);
 
+    companyData.companyDataIsSet = true;
+
     // Update company on api
     this.companyApi.fullyUpdateCompany(companyData, this.companyId).subscribe(
       data => {
         this.companyApi.getCompanyByEmail(data.email, () => {
           this.disableCompanyDataModificationInProgress();
         });
+        this.companyApi.getCompanies(() => {});
       },
       err => {
         console.error(err);
@@ -297,6 +313,8 @@ export class DataCompanyFormComponent implements OnInit, OnDestroy {
             }
           }
         });
+        this.onMondayOpeningHourChange(this.company.weekSchedule[0].openingTime);
+        this.onMondayClosingHourChange(this.company.weekSchedule[0].closingTime);
       }
 
       if (!!this.company.weekSchedule[1]) {
@@ -308,6 +326,8 @@ export class DataCompanyFormComponent implements OnInit, OnDestroy {
             }
           }
         });
+        this.onTuesdayOpeningHourChange(this.company.weekSchedule[1].openingTime);
+        this.onTuesdayClosingHourChange(this.company.weekSchedule[1].closingTime);
       }
 
       if (!!this.company.weekSchedule[2]) {
@@ -319,6 +339,8 @@ export class DataCompanyFormComponent implements OnInit, OnDestroy {
             }
           }
         });
+        this.onWednesdayOpeningHourChange(this.company.weekSchedule[2].openingTime);
+        this.onWednesdayClosingHourChange(this.company.weekSchedule[2].closingTime);
       }
 
       if (!!this.company.weekSchedule[3]) {
@@ -330,6 +352,8 @@ export class DataCompanyFormComponent implements OnInit, OnDestroy {
             }
           }
         });
+        this.onThursdayOpeningHourChange(this.company.weekSchedule[3].openingTime);
+        this.onThursdayClosingHourChange(this.company.weekSchedule[3].closingTime);
       }
 
       if (!!this.company.weekSchedule[4]) {
@@ -341,6 +365,8 @@ export class DataCompanyFormComponent implements OnInit, OnDestroy {
             }
           }
         });
+        this.onFridayOpeningHourChange(this.company.weekSchedule[4].openingTime);
+        this.onFridayClosingHourChange(this.company.weekSchedule[4].closingTime);
       }
 
       if (!!this.company.weekSchedule[5]) {
@@ -352,6 +378,8 @@ export class DataCompanyFormComponent implements OnInit, OnDestroy {
             }
           }
         });
+        this.onSaturdayOpeningHourChange(this.company.weekSchedule[5].openingTime);
+        this.onSaturdayClosingHourChange(this.company.weekSchedule[5].closingTime);
       }
 
       if (!!this.company.weekSchedule[6]) {
@@ -363,6 +391,8 @@ export class DataCompanyFormComponent implements OnInit, OnDestroy {
             }
           }
         });
+        this.onSundayOpeningHourChange(this.company.weekSchedule[6].openingTime);
+        this.onSundayClosingHourChange(this.company.weekSchedule[6].closingTime);
       }
     }
   }
@@ -371,4 +401,85 @@ export class DataCompanyFormComponent implements OnInit, OnDestroy {
     this.isCompanyDataModificationInProgressEvent.emit(false);
   }
 
+  onMondayOpeningHourChange(hour: string): void{
+    this.mondayClosingHours = this.onHourMinChange(hour);
+  }
+
+  onMondayClosingHourChange(hour: string): void{
+    this.mondayOpeningHours = this.onHourMaxChange(hour);
+  }
+
+  onTuesdayOpeningHourChange(hour: string): void{
+    this.tuesdayClosingHours = this.onHourMinChange(hour);
+  }
+
+  onTuesdayClosingHourChange(hour: string): void{
+    this.tuesdayOpeningHours = this.onHourMaxChange(hour);
+  }
+
+  onWednesdayOpeningHourChange(hour: string): void{
+    this.wednesdayClosingHours = this.onHourMinChange(hour);
+  }
+
+  onWednesdayClosingHourChange(hour: string): void{
+    this.wednesdayOpeningHours = this.onHourMaxChange(hour);
+  }
+
+  onThursdayOpeningHourChange(hour: string): void{
+    this.thursdayClosingHours = this.onHourMinChange(hour);
+  }
+
+  onThursdayClosingHourChange(hour: string): void{
+    this.thursdayOpeningHours = this.onHourMaxChange(hour);
+  }
+
+  onFridayOpeningHourChange(hour: string): void{
+    this.fridayClosingHours = this.onHourMinChange(hour);
+  }
+
+  onFridayClosingHourChange(hour: string): void{
+    this.fridayOpeningHours = this.onHourMaxChange(hour);
+  }
+
+  onSaturdayOpeningHourChange(hour: string): void{
+    this.saturdayClosingHours = this.onHourMinChange(hour);
+  }
+
+  onSaturdayClosingHourChange(hour: string): void{
+    this.saturdayOpeningHours = this.onHourMaxChange(hour);
+  }
+
+  onSundayOpeningHourChange(hour: string): void{
+    this.sundayClosingHours = this.onHourMinChange(hour);
+  }
+
+  onSundayClosingHourChange(hour: string): void{
+    this.sundayOpeningHours = this.onHourMaxChange(hour);
+  }
+
+  onHourMinChange(hourMin: string): string[] {
+    const hourMinNumber = this.utils.formatHoursToNumber(hourMin);
+    const closingHours = [];
+    // tslint:disable-next-line: prefer-for-of
+    for (let index = 0; index < hours.length; index++) {
+      const element = this.utils.formatHoursToNumber(hours[index]);
+      if (element > hourMinNumber) {
+        closingHours.push(hours[index]);
+      }
+    }
+    return closingHours;
+  }
+
+  onHourMaxChange(hourMax: string): string[] {
+    const hourMaxNumber = this.utils.formatHoursToNumber(hourMax);
+    const openingHours = [];
+    // tslint:disable-next-line: prefer-for-of
+    for (let index = 0; index < hours.length; index++) {
+      const element = this.utils.formatHoursToNumber(hours[index]);
+      if (element < hourMaxNumber) {
+        openingHours.push(hours[index]);
+      }
+    }
+    return openingHours;
+  }
 }

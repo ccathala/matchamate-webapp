@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { TabsModule } from 'ngx-bootstrap/tabs';
+import { CollapseModule } from 'ngx-bootstrap/collapse';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -30,6 +31,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CompanyBookedSessionsComponent } from './company/company-booked-sessions/company-booked-sessions.component';
 import { CompanyPlayedSessionsComponent } from './company/company-played-sessions/company-played-sessions.component';
 import { CompanyDataComponent } from './company/company-data/company-data.component';
+import { NgIdleKeepaliveModule } from '@ng-idle/keepalive';
+import { MomentModule } from 'angular2-moment';
 
 @NgModule({
   declarations: [
@@ -61,7 +64,10 @@ import { CompanyDataComponent } from './company/company-data/company-data.compon
     BrowserAnimationsModule,
     BsDatepickerModule.forRoot(),
     TabsModule.forRoot(),
-    FontAwesomeModule
+    FontAwesomeModule,
+    NgIdleKeepaliveModule.forRoot(),
+    MomentModule,
+    CollapseModule.forRoot()
   ],
   providers: [authInterceptorProviders, DatePipe],
   bootstrap: [AppComponent]

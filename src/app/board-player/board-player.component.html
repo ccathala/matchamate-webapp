@@ -1,13 +1,15 @@
-<div class="container mt-5">
-  <tabset>
-    <tab heading="Mes sessions de jeu à venir">
-      <app-booked-sessions [sessions]="sessions"></app-booked-sessions>
-    </tab>
-    <tab heading="Mes sessions de jeu passées">
-      <app-played-sessions [sessions]="sessions"></app-played-sessions>
-    </tab>
-    <tab heading="Mes informations personnelles">
-      <app-player-data></app-player-data>
-    </tab>
-  </tabset>
+<div class="container mt-3">
+  <div class="bg-light p-4">
+    <tabset>
+      <tab heading="Mes sessions de jeu à venir">
+        <app-booked-sessions [sessions]="sessions"></app-booked-sessions>
+      </tab>
+      <tab heading="Mes sessions de jeu passées">
+        <app-played-sessions [sessions]="sessions"></app-played-sessions>
+      </tab>
+      <tab heading="Mes informations personnelles">
+          <app-player-data></app-player-data>
+      </tab>
+    </tabset>
+  </div>
 </div>
